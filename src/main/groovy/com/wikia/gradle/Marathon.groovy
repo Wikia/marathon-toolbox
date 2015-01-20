@@ -49,9 +49,8 @@ class MarathonTask extends DefaultTask {
     Float mem = 300
 
     Map<String, String> envs = new LinkedHashMap<String, String>()
-    Integer instances = 1
+    Integer instances = null
     List<Integer> ports
-
 
     def configFetcher = new GitHubFetcher()
 
@@ -60,20 +59,23 @@ class MarathonTask extends DefaultTask {
         def root = json {
             id(marathon_id())
             container({
-                type(ContainerType.DOCKER)
+                type ContainerType.DOCKER
                 docker(
                         image: this.dockerImage,
                         network: this.networkType,
                 )
-                volumes VolumesHelper.build(this)
+                volumes(VolumesHelper.build(this))
             })
             cpus(this.cpus)
             mem(this.mem)
-            if (!this.ports.isEmpty()){
+            if (this.ports != null && !this.ports.isEmpty()){
                 ports(this.ports)
             }
             if (!envs.isEmpty()) {
                 env(envs)
+            }
+            if (this.instances != null){
+                instances(this.instances)
             }
         }
         CommandHelper.build(this, root)

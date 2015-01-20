@@ -11,10 +11,10 @@ import static org.junit.Assert.assertTrue
 
 class MarathonTest {
     static prepareTask(Project project, name = 'ha') {
-        MarathonTask task = project.task('ha', type: MarathonTask)
+        MarathonTask task = project.task(name, type: MarathonTask)
         task.configFetcher = [fetchWikiaConfig: { t-> return [['A', 1], ['B', 3]] }] as GitHubFetcher
         // mock external services
-        task
+        return task
     }
 
     static prepareFilledTask(Project project, name = 'ha') {
@@ -55,6 +55,7 @@ class MarathonTest {
         Project project = ProjectBuilder.builder().build()
         project.group = "com.wikia"
         MarathonTask task = prepareFilledTask(project)
+        System.err.println(task.buildRequestJson())
         assertEquals(task.buildRequestJson().toString(), properJson)
 
         // validate json after processing external config
