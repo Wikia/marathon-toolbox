@@ -3,9 +3,6 @@ package com.wikia.gradle
 import com.wikia.gradle.helpers.CommandHelper
 import com.wikia.gradle.helpers.VolumesHelper
 import groovy.json.JsonBuilder
-import groovyx.net.http.ContentType
-import groovyx.net.http.HttpResponseException
-import groovyx.net.http.RESTClient
 import org.gradle.api.DefaultTask
 import org.gradle.api.InvalidUserDataException
 import org.gradle.api.tasks.TaskAction
@@ -53,6 +50,7 @@ class MarathonTask extends DefaultTask {
     List<Integer> ports
 
     def configFetcher = new GitHubFetcher()
+    def marathon = new MarathonConnector(logger)
 
     def buildRequestJson() {
         def json = new JsonBuilder()
@@ -86,31 +84,16 @@ class MarathonTask extends DefaultTask {
         return "/" + [stage, project.group, project.name].join("/")
     }
 
-    def postConfigToMarathon() {
-        def client = new RESTClient(marathonURL)
-        try {
-            client.get(path: "/v2/apps/${marathon_id()}") {}
-        } catch (HttpResponseException ex) {
-            if (ex.statusCode != 404) {
-                throw ex
-            }
-            logger.debug("Post to marathon")
-            def requestBody = buildRequestJson().toString()
-            logger.debug(requestBody)
-            logger.debug(client.post(path: "/v2/apps", body: requestBody, requestContentType: ContentType.JSON))
-        }
-    }
-
     def processExternalConfig() {
-        if (useExternalConfig && externalConfigSourcePerStage[stage]) {
-            def cfg = configFetcher.fetchWikiaConfig(this)
+        if (this.useExternalConfig && this.externalConfigSourcePerStage[stage]) {
+            def cfg = this.configFetcher.fetchWikiaConfig(this)
             for (tuple in cfg) {
                 def key = tuple[0]
                 def val = tuple[1]
                 if (!(key && val)) {
                     throw new TaskValidationException("external provided invalid value", [new InvalidUserDataException(key), new InvalidUserDataException(value)])
                 }
-                if (this.allowOverrideOfExternalConfig || !envs.containsKey(key)) {
+                if (this.allowOverrideOfExternalConfig || !this.envs.containsKey(key)) {
                     this.envs[key] = val
                 }
             }
@@ -129,8 +112,9 @@ class MarathonTask extends DefaultTask {
     }
 
     @TaskAction
-    def sampleTask() {
-        validateData()
-        processExternalConfig()
+    def postApp() {
+        this.validateData()
+        this.processExternalConfig()
+        this.marathon.postConfig(this.marathonURL, this.marathon_id(), this.buildRequestJson().toString(), this.dockerTagPerVersion)
     }
 }

@@ -12,7 +12,8 @@ import static org.junit.Assert.assertTrue
 class MarathonTest {
     static prepareTask(Project project, name = 'ha') {
         MarathonTask task = project.task(name, type: MarathonTask)
-        task.configFetcher = [fetchWikiaConfig: { t-> return [['A', 1], ['B', 3]] }] as GitHubFetcher
+        task.configFetcher = [fetchWikiaConfig: { t -> return [['A', 1], ['B', 3]] }] as GitHubFetcher
+        task.marathon = [postConfig: { a, b, c, d -> return [] }, client: { t -> return [] }] as MarathonConnector
         // mock external services
         return task
     }
@@ -65,7 +66,7 @@ class MarathonTest {
     }
 
     @Test
-    public void aaa() {
+    public void testVersion() {
         def x1 = Version.valueOf("1.20.2")
         println x1.compareTo(Version.valueOf("1.2.1"))
     }
