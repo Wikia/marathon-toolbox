@@ -94,9 +94,11 @@ class MarathonTask extends DefaultTask {
             if (ex.statusCode != 404) {
                 throw ex
             }
-            println(client.post(path: "/v2/apps", body: buildRequestJson().toString(), requestContentType: ContentType.JSON))
+            logger.debug("Post to marathon")
+            def requestBody = buildRequestJson().toString()
+            logger.debug(requestBody)
+            logger.debug(client.post(path: "/v2/apps", body: requestBody, requestContentType: ContentType.JSON))
         }
-        println buildRequestJson()
     }
 
     def processExternalConfig() {
