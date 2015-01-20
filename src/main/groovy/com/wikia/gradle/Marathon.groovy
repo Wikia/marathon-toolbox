@@ -58,19 +58,22 @@ class MarathonTask extends DefaultTask {
     def buildRequestJson() {
         def json = new JsonBuilder()
         def root = json {
-            id marathon_id()
-            container {
-                type ContainerType.DOCKER
+            id(marathon_id())
+            container({
+                type(ContainerType.DOCKER)
                 docker(
-                        image: dockerImage,
-                        network: networkType,
+                        image: this.dockerImage,
+                        network: this.networkType,
                 )
                 volumes VolumesHelper.build(this)
+            })
+            cpus(this.cpus)
+            mem(this.mem)
+            if (!this.ports.isEmpty()){
+                ports(this.ports)
             }
-            cpus cpus
-            mem mem
             if (!envs.isEmpty()) {
-                env envs
+                env(envs)
             }
         }
         CommandHelper.build(this, root)
@@ -81,7 +84,7 @@ class MarathonTask extends DefaultTask {
         return "/" + [stage, project.group, project.name].join("/")
     }
 
-    def fetchStuff() {
+    def postConfigToMarathon() {
         def client = new RESTClient(marathonURL)
         try {
             client.get(path: "/v2/apps/${marathon_id()}") {}
@@ -103,14 +106,11 @@ class MarathonTask extends DefaultTask {
                 if (!(key && val)) {
                     throw new TaskValidationException("external provided invalid value", [new InvalidUserDataException(key), new InvalidUserDataException(value)])
                 }
-                // this logic is not obvious but makes sense :)
-                // if there already is and env and we allow override then don't overwrite what already is configured. because that is actually what is overriding and should stay :)
-                if (!envs.containsKey(key) || !allowOverrideOfExternalConfig) {
+                if (this.allowOverrideOfExternalConfig || !envs.containsKey(key)) {
                     this.envs[key] = val
                 }
             }
         }
-
     }
 
     MarathonTask() {
@@ -125,7 +125,7 @@ class MarathonTask extends DefaultTask {
     }
 
     @TaskAction
-    def xxxx() {
+    def sampleTask() {
         validateData()
         processExternalConfig()
     }

@@ -25,6 +25,4 @@ class GitHubFetcher {
         }
         return envs
     }
-
-
 }
