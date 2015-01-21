@@ -7,13 +7,11 @@ import org.gradle.api.logging.Logger
 
 
 class MarathonConnector {
-
     Logger logger
 
     def client(marathonURL) { new RESTClient(marathonURL) }
 
     MarathonConnector(logger = null) {
-
         this.logger = logger
     }
 
