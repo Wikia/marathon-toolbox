@@ -1,0 +1,30 @@
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            name = 'Archiva'
+            repository(url:'http://pkg-s2:81/repository/internal/') {
+                authentication(userName: archivaUsername, password: archivaPassword)
+            }
+            snapshotRepository(url:'http://pkg-s2:81/repository/snapshots/') {
+                authentication(userName: archivaUsername, password: archivaPassword)
+            }
+
+            pom.project {
+                name project.name
+                description project.description
+                url "https://github.com/Wikia/marathon_gradle_plugins"
+                licenses {
+                    license {
+                        name "RestrictedLicence"
+                    }
+                }
+
+                scm {
+                    connection "scm:git:https://github.com/Wikia/marathon_gradle_plugin.git"
+                    developerConnection "scm:git:https://github.com/Wikia/marathon_gradle_plugint.git"
+                    url "https://github.com/Wikia/marathon_gradle_plugin"
+                }
+            }
+        }
+    }
+}
