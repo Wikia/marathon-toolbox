@@ -4,6 +4,7 @@ import com.github.zafarkhaja.semver.Version
 import groovy.mock.interceptor.MockFor
 import groovyx.net.http.Method
 import groovyx.net.http.RESTClient
+import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.tasks.TaskInstantiationException
 import org.gradle.testfixtures.ProjectBuilder
@@ -28,7 +29,7 @@ class MarathonTaskTest {
         MarathonTask task = prepareTask(project, name)
         task.command = 'test'
         task.volumes = [
-                [path: "/dev/logger", mode: MarathonTask.VolumeMode.RW]
+                [path: "/dev/logger", mode: Defs.VolumeMode.RW]
         ]
         return task
     }
@@ -45,6 +46,16 @@ class MarathonTaskTest {
     public void noProjectGroupWillcauseExceptionToBeThrown() {
         Project project = ProjectBuilder.builder().build()
         prepareFilledTask(project)
+    }
+
+    @Test(expected = GradleException)
+    public void testCommandValidation() {
+        Project project = ProjectBuilder.builder().build()
+        project.group = "x"
+        def task = prepareFilledTask(project)
+        task.command = "x"
+        task.args = "y"
+        task.validateData()
     }
 
     @Test

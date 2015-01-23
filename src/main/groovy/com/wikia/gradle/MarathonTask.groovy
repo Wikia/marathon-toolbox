@@ -9,18 +9,6 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.TaskValidationException
 
 class MarathonTask extends DefaultTask {
-    public enum NetworkType {
-        HOST, BRIDGE
-    }
-
-    enum ContainerType {
-        DOCKER
-    }
-
-    enum VolumeMode {
-        RW, RO
-    }
-
     String stage = "test"
 
     // force and keep consistency
@@ -34,11 +22,11 @@ class MarathonTask extends DefaultTask {
                                         test : [repo: "Wikia/indexing-pipeline", path: "env_defaults.sh"]]
 
     String marathonURL = "http://mesos-s1:8080"
-    String command = ""
-    String args = ""
+    String command
+    String args
 
     String dockerImage = "ubuntu:14.04.1"
-    String networkType = NetworkType.HOST
+    String networkType = Defs.NetworkType.HOST
 
     List<Map<String, String>> volumes
 
@@ -57,7 +45,7 @@ class MarathonTask extends DefaultTask {
         def root = json {
             id(marathon_id())
             container({
-                type ContainerType.DOCKER
+                type Defs.ContainerType.DOCKER
                 docker(
                         image: this.dockerImage,
                         network: this.networkType,
