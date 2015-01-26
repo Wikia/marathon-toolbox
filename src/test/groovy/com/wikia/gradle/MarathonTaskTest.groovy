@@ -24,7 +24,7 @@ class MarathonTaskTest {
         // mock external services
         return task
     }
-
+    
     static prepareFilledTask(Project project, name = 'ha') {
         MarathonTask task = prepareTask(project, name)
         task.command = 'test'
@@ -76,7 +76,7 @@ class MarathonTaskTest {
                 mock.metaClass.post = { x ->
                     assert x.toString() ==
                            [path: '/v2/apps',
-                            body: '{"id":"/test/com.wikia/test","container":{"type":"DOCKER","docker":{"image":"ubuntu:14.04.1","network":"HOST"},"volumes":[{"containerPath":"/dev/logger","hostPath":"/dev/logger","mode":"RW"}]},"env":{"A":1,"B":3},"cmd":"test"}',
+                            body: '{"id":"/dev/com.wikia/test","container":{"type":"DOCKER","docker":{"image":"ubuntu:14.04.1","network":"HOST"},"volumes":[{"containerPath":"/dev/logger","hostPath":"/dev/logger","mode":"RW"}]},"env":{"A":1,"B":3},"cpus":1.5,"mem":300.0,"cmd":"test"}',
                             requestContentType: 'application/json'].toString()
                 }
                 return mock
@@ -87,7 +87,7 @@ class MarathonTaskTest {
 
     @Test
     public void buildsProperJsonForSampleConfigs() {
-        def properJson = '{"id":"/test/com.wikia/test","container":{"type":"DOCKER","docker":{"image":"ubuntu:14.04.1","network":"HOST"},"volumes":[{"containerPath":"/dev/logger","hostPath":"/dev/logger","mode":"RW"}]},"cmd":"test"}'
+        def properJson = '{"id":"/dev/com.wikia/test","container":{"type":"DOCKER","docker":{"image":"ubuntu:14.04.1","network":"HOST"},"volumes":[{"containerPath":"/dev/logger","hostPath":"/dev/logger","mode":"RW"}]},"cpus":1.5,"mem":300.0,"cmd":"test"}'
         Project project = ProjectBuilder.builder().build()
         project.group = "com.wikia"
         MarathonTask task = prepareFilledTask(project)
@@ -96,7 +96,7 @@ class MarathonTaskTest {
         // validate json after processing external config
         task.processExternalConfig()
         properJson =
-                '{"id":"/test/com.wikia/test","container":{"type":"DOCKER","docker":{"image":"ubuntu:14.04.1","network":"HOST"},"volumes":[{"containerPath":"/dev/logger","hostPath":"/dev/logger","mode":"RW"}]},"env":{"A":1,"B":3},"cmd":"test"}'
+                '{"id":"/dev/com.wikia/test","container":{"type":"DOCKER","docker":{"image":"ubuntu:14.04.1","network":"HOST"},"volumes":[{"containerPath":"/dev/logger","hostPath":"/dev/logger","mode":"RW"}]},"env":{"A":1,"B":3},"cpus":1.5,"mem":300.0,"cmd":"test"}'
         assertEquals(task.buildRequestJson().toString(), properJson)
     }
 

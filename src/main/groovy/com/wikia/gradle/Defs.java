@@ -16,4 +16,16 @@ public class Defs {
   public enum VolumeMode {
     RW, RO
   }
+
+  public enum Stages {
+    STAGING("stage"), PRODUCTION("prod"), DEVELOPER("dev");
+    String stage;
+    Stages(String s){
+      this.stage = s;
+    }
+
+    public String toString() {
+      return this.stage;
+    }
+  }
 }

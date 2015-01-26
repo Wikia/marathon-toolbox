@@ -9,7 +9,8 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.TaskValidationException
 
 class MarathonTask extends DefaultTask {
-    String stage = "test"
+
+    String stage = Defs.Stages.DEVELOPER;
 
     // force and keep consistency
     // i.e. you can only deploy if the current tag deployed is lower than current version
@@ -17,9 +18,8 @@ class MarathonTask extends DefaultTask {
 
     Boolean useExternalConfig = true
     Boolean allowOverrideOfExternalConfig = true
-    def externalConfigSourcePerStage = [stage: [repo: "Wikia/indexing-pipeline", path: "env_defaults.sh"],
-                                        prod : [repo: "Wikia/indexing-pipeline", path: "env_defaults.sh"],
-                                        test : [repo: "Wikia/indexing-pipeline", path: "env_defaults.sh"]]
+
+    def githubEnvDataSource = [repo: "Wikia/indexing-pipeline", path: "env_defaults.sh"]
 
     String marathonURL = "http://mesos-s1:8080"
     String command
@@ -49,21 +49,22 @@ class MarathonTask extends DefaultTask {
                 docker(
                         image: this.dockerImage,
                         network: this.networkType,
-                )
+                        )
                 volumes(VolumesHelper.build(this))
             })
-            cpus(this.cpus)
-            mem(this.mem)
-            if (this.ports != null && !this.ports.isEmpty()){
-                ports(this.ports)
-            }
-            if (!envs.isEmpty()) {
-                env(envs)
-            }
-            if (this.instances != null){
-                instances(this.instances)
-            }
         }
+        if (!this.envs.isEmpty()) {
+            root.env = this.envs
+        }
+        root.cpus = this.cpus
+        root.mem = this.mem
+        if (this.instances != null) {
+            root.instances = this.instances
+        }
+        if (this.ports != null && !this.ports.isEmpty()) {
+            root.ports = this.ports
+        }
+
         CommandHelper.build(this, root)
         return json
     }
@@ -73,13 +74,16 @@ class MarathonTask extends DefaultTask {
     }
 
     def processExternalConfig() {
-        if (this.useExternalConfig && this.externalConfigSourcePerStage[stage]) {
-            def cfg = this.configFetcher.fetchWikiaConfig(this)
+        if (this.useExternalConfig && this.githubEnvDataSource != null) {
+            def cfg = this.configFetcher.fetchWikiaConfig(this.githubEnvDataSource)
             for (tuple in cfg) {
                 def key = tuple[0]
                 def val = tuple[1]
                 if (!(key && val)) {
-                    throw new TaskValidationException("external provided invalid value", [new InvalidUserDataException(key), new InvalidUserDataException(value)])
+                    throw new TaskValidationException("external provided invalid value",
+                                                      [new InvalidUserDataException(
+                                                              key), new InvalidUserDataException(
+                                                              value)])
                 }
                 if (this.allowOverrideOfExternalConfig || !this.envs.containsKey(key)) {
                     this.envs[key] = val
@@ -90,7 +94,8 @@ class MarathonTask extends DefaultTask {
 
     MarathonTask() {
         if (project.group == '') {
-            throw new TaskValidationException("project.group needs to be set", [new InvalidUserDataException('project.group')])
+            throw new TaskValidationException("project.group needs to be set",
+                                              [new InvalidUserDataException('project.group')])
         }
     }
 
@@ -103,6 +108,8 @@ class MarathonTask extends DefaultTask {
     def postApp() {
         this.validateData()
         this.processExternalConfig()
-        this.marathon.postConfig(this.marathonURL, this.marathon_id(), this.buildRequestJson().toString(), this.dockerTagPerVersion)
+        this.marathon.
+                postConfig(this.marathonURL, this.marathon_id(), this.buildRequestJson().toString(),
+                           this.dockerTagPerVersion)
     }
 }

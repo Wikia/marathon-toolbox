@@ -5,10 +5,9 @@ import org.gradle.api.tasks.TaskValidationException
 import org.kohsuke.github.GitHub
 
 class GitHubFetcher {
-    def fetchWikiaConfig(task) {
+    def fetchWikiaConfig(fileLoc) {
         // ideally this stuff will be read from Consul or something
         GitHub gh = GitHub.connect()
-        def fileLoc = task.externalConfigSourcePerStage[task.stage]
         if (fileLoc["repo"] && fileLoc["path"]) {
             def repo = gh.getRepository(fileLoc["repo"])
             return parse_env_defaults(repo.getFileContent(fileLoc["path"]).content)
