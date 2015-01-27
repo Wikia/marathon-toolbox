@@ -2,7 +2,7 @@ apply plugin: 'groovy'
 apply plugin: 'maven'
 apply from: rootProject.file('gradle/deploy.gradle')
 
-version = '0.4.13'
+version = '0.4.14'
 group = 'com.wikia.gradle'
 sourceCompatibility = 1.8
 
