@@ -12,7 +12,8 @@ class CommandHelper {
     static build(task, jsonRoot) {
         if (task.command != null) {
             jsonRoot['cmd'] = task.command
-        } else if (task.args != null) {
+        }
+        if (task.args != null) {
             jsonRoot['args'] = task.args
         }
     }

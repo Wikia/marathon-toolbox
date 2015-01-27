@@ -54,7 +54,7 @@ class MarathonTaskTest {
         project.group = "x"
         def task = prepareFilledTask(project)
         task.command = "x"
-        task.args = "y"
+        task.args = ["y"]
         task.validateData()
     }
 
@@ -97,6 +97,16 @@ class MarathonTaskTest {
         task.processExternalConfig()
         properJson =
                 '{"id":"/dev/com.wikia/test","container":{"type":"DOCKER","docker":{"image":"ubuntu:14.04.1","network":"HOST"},"volumes":[{"containerPath":"/dev/logger","hostPath":"/dev/logger","mode":"RW"}]},"env":{"A":1,"B":3},"cpus":1.5,"mem":300.0,"cmd":"test"}'
+        assertEquals(task.buildRequestJson().toString(), properJson)
+    }
+
+    @Test
+    public void buildsProperJsonWithCommandArgs() {
+        def properJson = '{"id":"/dev/com.wikia/test","container":{"type":"DOCKER","docker":{"image":"ubuntu:14.04.1","network":"HOST"},"volumes":[{"containerPath":"/dev/logger","hostPath":"/dev/logger","mode":"RW"}]},"cpus":1.5,"mem":300.0,"cmd":"test","args":["A","B"]}'
+        Project project = ProjectBuilder.builder().build()
+        project.group = "com.wikia"
+        MarathonTask task = prepareFilledTask(project)
+        task.args = ["A", "B"]
         assertEquals(task.buildRequestJson().toString(), properJson)
     }
 

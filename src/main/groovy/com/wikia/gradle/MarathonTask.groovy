@@ -23,7 +23,7 @@ class MarathonTask extends DefaultTask {
 
     String marathonURL = "http://mesos-s1:8080"
     String command
-    String args
+    List<String> args
 
     String dockerImage = "ubuntu:14.04.1"
     String networkType = Defs.NetworkType.HOST
