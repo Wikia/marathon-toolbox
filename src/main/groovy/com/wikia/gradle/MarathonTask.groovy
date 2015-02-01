@@ -19,7 +19,7 @@ class MarathonTask extends DefaultTask {
     Boolean useExternalConfig = true
     Boolean allowOverrideOfExternalConfig = true
 
-    def githubEnvDataSource = [repo: "Wikia/indexing-pipeline", path: "env_defaults.sh"]
+    Map<String, String> githubEnvDataSource = [repo: "Wikia/indexing-pipeline", path: "python/env_defaults.sh"]
 
     String marathonURL = "http://mesos-s1:8080"
     String command
