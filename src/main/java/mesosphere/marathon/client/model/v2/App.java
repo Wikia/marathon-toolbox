@@ -22,6 +22,7 @@ public class App {
 	private Collection<Task> tasks;
 	private Integer tasksStaged;
 	private Integer tasksRunning;
+    private Collection<HealthCheck> healthChecks;
 
 	public String getId() {
 		return id;
@@ -159,6 +160,14 @@ public class App {
 	public void setTasksRunning(Integer tasksRunning) {
 		this.tasksRunning = tasksRunning;
 	}
+
+    public Collection<HealthCheck> getHealthChecks() {
+        return healthChecks;
+    }
+
+    public void setHealthChecks(Collection<HealthCheck> healthChecks) {
+        this.healthChecks = healthChecks;
+    }
 
 	@Override
 	public String toString() {
