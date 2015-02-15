@@ -1,12 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.github.mohitsoni</groupId>
+	<groupId>com.github.pchojnacki</groupId>
 	<artifactId>marathon-client</artifactId>
 	<packaging>jar</packaging>
 	<version>0.4.3-SNAPSHOT</version>
 	<name>marathon-client</name>
-	<description>A Java API client for Mesosphere's Marathon.</description>
+	<description>A fork of github.com/mohitsoni/marathon-client a Java API client for Mesosphere's Marathon.</description>
 	<url>https://github.com/mohitsoni/marathon-client</url>
 
 	<parent>
