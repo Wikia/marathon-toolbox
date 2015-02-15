@@ -8,6 +8,8 @@ http.log*
 
 # Folders
 target/
+build/
+.gradle/
 
 # Eclipse files
 .classpath
@@ -19,3 +21,4 @@ target/
 *.ipr
 *.iws
 .idea/
+
