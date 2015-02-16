@@ -1,0 +1,43 @@
+apply plugin: 'maven-publish'
+
+bintray {
+    key = bintrayApiKey
+    user = bintrayUser
+    publications = ['mavenJava']
+    pkg {
+        name = 'marathon-client'
+        repo = 'maven'
+        licenses = ['Apache-2.0']
+        version {
+            gpg {
+                sign = true
+            }
+        }
+    }
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    sourcesJar
+    javadocJar
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+        }
+    }
+}
+
