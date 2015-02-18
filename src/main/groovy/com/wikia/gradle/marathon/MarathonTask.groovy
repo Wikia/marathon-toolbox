@@ -1,7 +1,8 @@
-package com.wikia.gradle
+package com.wikia.gradle.marathon
 
-import com.wikia.gradle.helpers.CommandHelper
-import com.wikia.gradle.helpers.VolumesHelper
+import com.wikia.gradle.marathon.helpers.VolumesHelper
+import com.wikia.gradle.marathon.helpers.CommandHelper
+import com.wikia.gradle.marathon.utils.GitHubFetcher
 import groovy.json.JsonBuilder
 import org.gradle.api.DefaultTask
 import org.gradle.api.InvalidUserDataException

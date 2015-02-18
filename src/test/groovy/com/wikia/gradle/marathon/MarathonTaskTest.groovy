@@ -1,6 +1,7 @@
-package com.wikia.gradle
+package com.wikia.gradle.marathon
 
 import com.github.zafarkhaja.semver.Version
+import com.wikia.gradle.marathon.utils.GitHubFetcher
 import groovy.mock.interceptor.MockFor
 import groovyx.net.http.Method
 import groovyx.net.http.RESTClient

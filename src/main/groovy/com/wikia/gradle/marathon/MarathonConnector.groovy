@@ -1,4 +1,4 @@
-package com.wikia.gradle
+package com.wikia.gradle.marathon
 
 import groovyx.net.http.ContentType
 import groovyx.net.http.HttpResponseException

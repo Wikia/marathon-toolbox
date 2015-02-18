@@ -1,4 +1,4 @@
-package com.wikia.gradle.helpers
+package com.wikia.gradle.marathon.helpers
 
 import org.gradle.api.GradleException
 

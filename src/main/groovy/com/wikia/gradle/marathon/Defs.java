@@ -1,4 +1,4 @@
-package com.wikia.gradle;
+package com.wikia.gradle.marathon;
 
 /**
  * Created by pawelch on 23.01.15.
