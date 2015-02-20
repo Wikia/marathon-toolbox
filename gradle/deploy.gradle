@@ -1,30 +1,45 @@
-uploadArchives {
+apply plugin: 'maven-publish'
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    sourcesJar
+    javadocJar
+}
+
+publishing {
     repositories {
-        mavenDeployer {
-            name = 'Archiva'
-            repository(url:'http://pkg-s2:81/repository/internal/') {
-                authentication(userName: archivaUsername, password: archivaPassword)
+        maven {
+//            uniqueVersion false
+            credentials {
+                username archivaUsername
+                password archivaPassword
             }
-            snapshotRepository(url:'http://pkg-s2:81/repository/snapshots/') {
-                authentication(userName: archivaUsername, password: archivaPassword)
-            }
-
-            pom.project {
-                name project.name
-                description project.description
-                url "https://github.com/Wikia/marathon_gradle_plugins"
-                licenses {
-                    license {
-                        name "RestrictedLicence"
-                    }
-                }
-
-                scm {
-                    connection "scm:git:https://github.com/Wikia/marathon_gradle_plugin.git"
-                    developerConnection "scm:git:https://github.com/Wikia/marathon_gradle_plugint.git"
-                    url "https://github.com/Wikia/marathon_gradle_plugin"
-                }
+            if (project.version.endsWith('-SNAPSHOT')) {
+                url "${archivaUrl}/repository/snapshots"
+            } else {
+                url "${archivaUrl}/repository/internal"
             }
         }
     }
+    publications {
+        library(MavenPublication) {
+//            if (project.version.endsWith("-SNAPSHOT")) {
+//                version project.version.replace("-SNAPSHOT", )
+//            }
+
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+        }
+    }
 }
+
+

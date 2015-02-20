@@ -1,19 +1,19 @@
 apply plugin: 'groovy'
-apply plugin: 'maven'
 apply from: rootProject.file('gradle/deploy.gradle')
 
 version = '0.4.17-SNAPSHOT'
 group = 'com.wikia.gradle'
-sourceCompatibility = 1.6
+sourceCompatibility = 1.7
 
 repositories {
     mavenCentral()
     maven { url "http://repo.jenkins-ci.org/repo" }
-    maven { url "http://pkg-s2:81/repository" }
-    maven { url "http://dl.bintray.com/pawel/maven" }
 }
 
 dependencies {
+    def aetherVersion = "1.0.2.v20150114"
+    def mavenVersion = "3.2.5"
+
     compile gradleApi()
     compile localGroovy()
     compile 'org.codehaus.groovy.modules.http-builder:http-builder:0.7'
@@ -21,6 +21,20 @@ dependencies {
     compile 'com.github.zafarkhaja:java-semver:0.8.0'
     compile 'org.kohsuke:github-api:1.59'
     compile 'com.github.pchojnacki:marathon-client:0.4.3'
+
+    compile "org.eclipse.aether:aether-api:${aetherVersion}"
+    compile "org.eclipse.aether:aether-impl:${aetherVersion}"
+    compile "org.eclipse.aether:aether-connector-basic:${aetherVersion}"
+    compile "org.eclipse.aether:aether-transport-file:${aetherVersion}"
+    compile "org.eclipse.aether:aether-transport-http:${aetherVersion}"
+    compile "org.eclipse.aether:aether-util:${aetherVersion}"
+    compile "org.eclipse.aether:aether-spi:${aetherVersion}"
+    compile "org.eclipse.aether:aether:${aetherVersion}"
+
+    compile "org.apache.maven:maven-aether-provider:${mavenVersion}"
+    compile "org.apache.maven:maven-model:${mavenVersion}"
+    compile "org.apache.maven:maven-core:${mavenVersion}"
+    compile 'com.google.inject:guice:4.0-beta5'
 
     testCompile group: 'junit', name: 'junit', version: '4.11'
 }
