@@ -19,9 +19,9 @@ class MarathonConfig {
     }
 
     def validate() {
-        ["url"].forEach({ item ->
+        ["url"].each({ item ->
             if (this.properties.get(item) == null) {
-                throw new RuntimeException("Stage.${item} needs to be set")
+                throw new RuntimeException("Marathon.${item} needs to be set")
             }
         })
     }

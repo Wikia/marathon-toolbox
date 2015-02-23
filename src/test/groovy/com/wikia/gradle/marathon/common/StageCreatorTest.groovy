@@ -36,34 +36,6 @@ class StageCreatorTest {
         assertEquals(stage.environmentConfig.environmentStorage.get("a"), "b")
     }
 
-    @Test
-    void stagesCanShareResources() {
-        def stageCreator = new StageCreator()
-        stageCreator.marathon {
-            url = "http://elo"
-        }
-        def sharedResources
-        def stageA = stageCreator.newStage {
-            name = "x"
-            sharedResources = resources {
-                cpus = 1
-                mem = 100
-                instances = 1
-                ports = [0]
-            }
-        }
-
-        def stageB = stageCreator.newStage {
-            name = "y"
-            resources sharedResources
-        }
-        stageCreator.resolve(stageA).validate()
-        stageCreator.resolve(stageB).validate()
-
-        assertEquals(stageB.resourcesConfig.instances, 1)
-        assertEquals(stageB.resourcesConfig.instances, stageA.resourcesConfig.instances)
-    }
-
     @Test(expected = RuntimeException.class)
     void failsWhenMarathonConfigIsNotProperlySet() {
         def stageCreator = new StageCreator()

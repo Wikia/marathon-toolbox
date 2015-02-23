@@ -3,7 +3,7 @@ package com.wikia.gradle.marathon.common
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class StageCreator {
+public class StageCreator {
 
     Logger logger = LoggerFactory.getLogger(StageCreator)
     Stage baseStage = new Stage()
@@ -44,6 +44,10 @@ class StageCreator {
         return setupAndAddStage(stage, closure)
     }
 
+    def Map<String, Stage> getStages() {
+        return this.stages
+    }
+
     private def setupAndAddStage(Stage stage, Closure closure) {
         closure.delegate = stage
         closure()
@@ -58,10 +62,8 @@ class StageCreator {
     }
 
     def resolve(Stage stage) {
-        stage.environmentConfig = this.baseStage.environmentClosure()
-        stage.resourcesConfig = this.baseStage.resourcesClosure()
-        stage.marathonConfig = this.baseStage.marathonClosure()
-        stage.resolve()
+        this.baseStage.resolve()
+        stage.resolve(this.baseStage)
         return stage
     }
 }

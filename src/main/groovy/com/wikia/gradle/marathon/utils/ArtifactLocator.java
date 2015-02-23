@@ -56,8 +56,8 @@ public class ArtifactLocator {
 
   }
 
-  public String getUrl(String groupId, String artifactId, String version) {
-    Artifact artifact = new DefaultArtifact(groupId, artifactId, "jar", version);
+  public String getUrl(String groupId, String artifactId, String extenstion, String version) {
+    Artifact artifact = new DefaultArtifact(groupId, artifactId, extenstion, version);
 
     String path;
     if (artifact.isSnapshot()) {

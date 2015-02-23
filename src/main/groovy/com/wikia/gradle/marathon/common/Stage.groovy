@@ -10,33 +10,31 @@ class Stage {
     Environment environmentConfig = new Environment()
     MarathonConfig marathonConfig = new MarathonConfig()
 
-    Closure marathonClosure = {
-        this.marathonConfig
-    }
-    Closure environmentClosure = {
-        this.environmentConfig
-    }
-    Closure resourcesClosure = {
-        this.resourcesConfig
-    }
+    Closure marathonClosure = ConfigResolver.noop()
+    Closure environmentClosure = ConfigResolver.noop()
+    Closure resourcesClosure = ConfigResolver.noop()
 
     def resources(Closure closure) {
-        this.resourcesClosure = ConfigResolver.lazyClosure(Resources.class, this.resourcesClosure, closure)
-        return this.resourcesClosure
+        this.resourcesClosure = ConfigResolver.stackClosures(
+                ConfigResolver.dslToParamClosure(closure), this.resourcesClosure
+        )
     }
 
     def environment(Closure closure) {
-        this.environmentClosure = ConfigResolver.lazyClosure(Environment.class, this.environmentClosure, closure)
-        return this.environmentClosure
+        this.environmentClosure = ConfigResolver.stackClosures(
+                ConfigResolver.dslToParamClosure(closure), this.environmentClosure
+        )
     }
 
     def marathon(Closure closure) {
-        this.marathonClosure = ConfigResolver.lazyClosure(MarathonConfig.class, this.marathonClosure, closure)
-        return this.marathonClosure
+        this.marathonClosure = ConfigResolver.stackClosures(
+                ConfigResolver.dslToParamClosure(closure),
+                this.marathonClosure
+        )
     }
 
     def validate() {
-        ["name"].forEach({ item ->
+        ["name"].each({ item ->
             if (this.properties.get(item) == null) {
                 throw new RuntimeException("Stage.${item} needs to be set")
             }
@@ -45,10 +43,13 @@ class Stage {
         this.resourcesConfig.validate()
     }
 
-    def resolve() {
-        this.environmentConfig = this.environmentClosure()
-        this.resourcesConfig = this.resourcesClosure()
-        this.marathonConfig = this.marathonClosure()
+    def resolve(Stage from = null) {
+        if (from == null) {
+            from = this
+        }
+        this.marathonConfig = this.getMarathonClosure()(from.marathonConfig)
+        this.environmentConfig = this.getEnvironmentClosure()(from.environmentConfig)
+        this.resourcesConfig = this.getResourcesClosure()(from.resourcesConfig)
         return this
     }
 }
