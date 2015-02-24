@@ -5,11 +5,11 @@ import org.junit.Test
 import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertNull
 
-class StageCreatorTest {
+class MarathonExtensionTest {
 
     @Test
     public void stageIsCreatedUsingNiceDsl() {
-        def stageCreator = new StageCreator()
+        def stageCreator = new MarathonExtension()
         stageCreator.marathon {
             url = "ehlo"
         }
@@ -38,7 +38,7 @@ class StageCreatorTest {
 
     @Test(expected = RuntimeException.class)
     void failsWhenMarathonConfigIsNotProperlySet() {
-        def stageCreator = new StageCreator()
+        def stageCreator = new MarathonExtension()
         stageCreator.marathon {
         }
         stageCreator.resources {
@@ -54,7 +54,7 @@ class StageCreatorTest {
 
     @Test
     void stagesConfigCanBeInheritedFromBase() {
-        def stageCreator = new StageCreator()
+        def stageCreator = new MarathonExtension()
         stageCreator.marathon {
             url = "A"
         }
@@ -71,7 +71,7 @@ class StageCreatorTest {
 
     @Test
     public void productionStageIsCreatedUsingNiceDsl() {
-        def stageCreator = new StageCreator()
+        def stageCreator = new MarathonExtension()
         stageCreator.marathon {
             url = "http://"
         }

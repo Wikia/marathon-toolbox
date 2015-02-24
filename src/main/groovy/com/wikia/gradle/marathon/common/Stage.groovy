@@ -8,7 +8,7 @@ class Stage {
     String name = null
     Resources resourcesConfig = new Resources()
     Environment environmentConfig = new Environment()
-    MarathonConfig marathonConfig = new MarathonConfig()
+    MarathonAddress marathonConfig = new MarathonAddress()
 
     Closure marathonClosure = ConfigResolver.noop()
     Closure environmentClosure = ConfigResolver.noop()

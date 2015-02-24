@@ -3,9 +3,9 @@ package com.wikia.gradle.marathon.common
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-public class StageCreator {
+public class MarathonExtension {
 
-    Logger logger = LoggerFactory.getLogger(StageCreator)
+    Logger logger = LoggerFactory.getLogger(MarathonExtension)
     Stage baseStage = new Stage()
 
     private Map<String, Stage> stages = new HashMap<>()

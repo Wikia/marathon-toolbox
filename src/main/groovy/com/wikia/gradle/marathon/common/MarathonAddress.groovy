@@ -4,13 +4,13 @@ import com.wikia.gradle.marathon.utils.GitHubFetcher
 import groovy.transform.AutoClone
 
 @AutoClone
-class MarathonConfig {
+class MarathonAddress {
 
     String url
     GitHubFetcher gitHubFetcher
 
     def readConfigFromGithub(Closure closure) {
-        if (gitHubFetcher == null){
+        if (gitHubFetcher == null) {
             gitHubFetcher = new GitHubFetcher()
         }
         closure.delegate = gitHubFetcher
@@ -19,10 +19,8 @@ class MarathonConfig {
     }
 
     def validate() {
-        ["url"].each({ item ->
-            if (this.properties.get(item) == null) {
-                throw new RuntimeException("Marathon.${item} needs to be set")
-            }
-        })
+        if (this.properties.get("url") == null) {
+            throw new RuntimeException("Marathon.url needs to be set")
+        }
     }
 }
