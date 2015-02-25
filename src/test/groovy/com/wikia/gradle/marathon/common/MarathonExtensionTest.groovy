@@ -32,8 +32,8 @@ class MarathonExtensionTest {
         assertEquals(stage.name, "awesome_stage")
         assertEquals(stage.resourcesConfig.cpus, 1, 0.001) // 0.001 tolerance
         assertEquals(stage.resourcesConfig.mem, 100, 0.001)
-        assertEquals(stage.environmentConfig.environmentStorage.get("d")(), "someValue")
-        assertEquals(stage.environmentConfig.environmentStorage.get("a"), "b")
+        assertEquals(stage.environmentConfig.dslProvidedEnvironment.get("d")(), "someValue")
+        assertEquals(stage.environmentConfig.dslProvidedEnvironment.get("a")(), "b")
     }
 
     @Test(expected = RuntimeException.class)
@@ -97,8 +97,8 @@ class MarathonExtensionTest {
             cpus = 1.2
         }
         stageCreator.resolve(stage).validate()
-        assertEquals(stage.environmentConfig.environmentStorage.get("x"), "1")
-        assertEquals(stage.environmentConfig.environmentStorage.get("y"), "2")
+        assertEquals(stage.environmentConfig.getEnv().get("x"), "1")
+        assertEquals(stage.environmentConfig.getEnv().get("y"), "2")
 
         assertEquals(stage.resourcesConfig.cpus, 1.2, 0.001)
         assertEquals(stage.resourcesConfig.mem, 200, 0.001)

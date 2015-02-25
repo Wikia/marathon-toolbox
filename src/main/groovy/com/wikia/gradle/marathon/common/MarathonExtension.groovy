@@ -7,6 +7,7 @@ public class MarathonExtension {
 
     Logger logger = LoggerFactory.getLogger(MarathonExtension)
     Stage baseStage = new Stage()
+    App appConfig = new App()
 
     private Map<String, Stage> stages = new HashMap<>()
 
@@ -16,6 +17,11 @@ public class MarathonExtension {
 
     def marathon(Closure closure) {
         baseStage.marathon(closure)
+    }
+
+    def app(Closure closure) {
+        closure.delegate = appConfig
+        closure()
     }
 
     def environment(Closure closure) {
@@ -66,5 +72,9 @@ public class MarathonExtension {
         stage.resolve(this.baseStage)
         return stage
     }
-}
 
+    def validate(Stage stage){
+        stage.validate()
+        appConfig.validate()
+    }
+}

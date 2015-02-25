@@ -53,4 +53,14 @@ class App {
             throw new RuntimeException("Docker image specified after binary URI has been provided")
         }
     }
+
+    def isDocker() {
+        image != null
+    }
+
+    def validate() {
+        if (this.properties.get("cmd") == null) {
+            throw new RuntimeException("App.cmd needs to be set")
+        }
+    }
 }

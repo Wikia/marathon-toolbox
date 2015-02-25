@@ -17,6 +17,7 @@ class MarathonPlugin implements Plugin<Project> {
                     group = "deployment"
                     description = "Deploy to ${newStage.name}"
                     stage = newStage
+                    marathonExtension = deployments
                     deployments.resolve(stage).validate()
                 }
             }
