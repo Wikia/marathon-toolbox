@@ -13,10 +13,15 @@ class App {
     String artifactExtension = "jar"
     Closure<String> executablePath = null
 
+    Integer portIndex = null
+    String healthcheckPath = null
+
+    def healthCheck(Integer portIndex, String healthcheckPath) {
+        this.portIndex = portIndex
+        this.healthcheckPath = healthcheckPath
+    }
+
     def mavenSource(String repositoryUrl) {
-        if (this.image != null) {
-            throw new RuntimeException("Docker image specified before binary URI has been provided")
-        }
         uri = { Project project ->
             new ArtifactLocator(repositoryUrl).getUrl(
                     project.group.toString(),
@@ -47,20 +52,56 @@ class App {
         artifactExtension = "zip"
     }
 
-    def docker(imageName) {
+    def dockerSource(imageName) {
         image = { imageName }
         if (this.uri != null) {
             throw new RuntimeException("Docker image specified after binary URI has been provided")
         }
     }
 
+    def isMaven() {
+        this.uri != null
+    }
+
     def isDocker() {
-        image != null
+        this.image != null
+    }
+
+    def useHealtcheck() {
+        this.portIndex != null && this.healtcheckPath != null
     }
 
     def validate() {
-        if (this.properties.get("cmd") == null) {
+        if (this.cmd == null) {
             throw new RuntimeException("App.cmd needs to be set")
         }
+        if (this.isMaven()) {
+            if (this.executablePath == null) {
+                throw new RuntimeException(
+                        "ExecutablePath not set. Did you forget to declare application?")
+            }
+        }
+        if (this.arguments == null) {
+            throw new RuntimeException(
+                    "Arguments not set. Did you forget to declare application?")
+        }
+
+        if (this.isDocker() && this.isMaven()) {
+            throw new RuntimeException(
+                    "Both docker and maven application source have been specified.")
+        }
+    }
+
+    String uriProvider(Project project) {
+        this.uri(project)
+    }
+
+    String cmdProvider(Project project) {
+        this.cmd(project)
+    }
+
+    String imageProvider(Project project) {
+        this.image(project)
     }
 }
+

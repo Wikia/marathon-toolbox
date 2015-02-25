@@ -8,6 +8,7 @@ public class MarathonExtension {
     Logger logger = LoggerFactory.getLogger(MarathonExtension)
     Stage baseStage = new Stage()
     App appConfig = new App()
+    Healthchecks healthchecks = new Healthchecks()
 
     private Map<String, Stage> stages = new HashMap<>()
 
@@ -22,6 +23,11 @@ public class MarathonExtension {
     def app(Closure closure) {
         closure.delegate = appConfig
         closure()
+    }
+
+    def healthchecks(Closure closure) {
+        closure.delegate = healthchecks
+        closure
     }
 
     def environment(Closure closure) {

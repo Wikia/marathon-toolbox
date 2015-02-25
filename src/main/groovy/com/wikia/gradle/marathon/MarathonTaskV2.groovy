@@ -16,7 +16,7 @@ class MarathonTaskV2 extends DefaultTask {
     MarathonExtension marathonExtension
 
     String getDeploymentId() {
-        return "/xx/" + [stage.name, project.group, project.name].join("/")
+        return "/" + [stage.name, project.group, project.name].join("/")
     }
 
     App prepareAppDescription() {
@@ -28,24 +28,24 @@ class MarathonTaskV2 extends DefaultTask {
         app.setEnv(this.stage.environmentConfig.getEnv())
         app.setId(this.getDeploymentId())
 
-        def hc = new HealthCheck()
-        hc.intervalSeconds = 5
-        hc.portIndex = 1 // if app is dropwizard
-        hc.path = "/healthcheck"
-        app.setHealthChecks(Arrays.asList(hc))
+        List<HealthCheck> healthChecks = this.marathonExtension.healthchecks.healthchecksProvider()
+
+        if (healthChecks.size() > 0) {
+            app.setHealthChecks(healthChecks)
+        }
 
         def appConfig = this.marathonExtension.appConfig
         if (appConfig.isDocker()) {
             Container container = new Container()
             container.type = "DOCKER"
-            container.docker.image = appConfig.getImage()(project)
+            container.docker.image = appConfig.imageProvider(project)
             container.docker.network = "HOST"
             app.setContainer(container)
         } else {
-            app.setUris(Arrays.asList(appConfig.getUri()(project)))
+            app.setUris(Arrays.asList(appConfig.uriProvider(project)))
         }
 
-        app.setCmd(appConfig.getCmd()(project))
+        app.setCmd(appConfig.cmdProvider(project))
         app
     }
 
