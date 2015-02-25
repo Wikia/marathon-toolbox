@@ -13,15 +13,10 @@ class App {
     String artifactExtension = "jar"
     Closure<String> executablePath = null
 
-    Integer portIndex = null
-    String healthcheckPath = null
+    String mavenPublishTaskName = null
 
-    def healthCheck(Integer portIndex, String healthcheckPath) {
-        this.portIndex = portIndex
-        this.healthcheckPath = healthcheckPath
-    }
-
-    def mavenSource(String repositoryUrl) {
+    def mavenSource(String repositoryUrl, String mavenPublishTaskName) {
+        this.mavenPublishTaskName = mavenPublishTaskName
         uri = { Project project ->
             new ArtifactLocator(repositoryUrl).getUrl(
                     project.group.toString(),

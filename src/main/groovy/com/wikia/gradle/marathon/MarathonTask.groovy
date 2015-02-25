@@ -1,116 +1,59 @@
 package com.wikia.gradle.marathon
 
-import com.wikia.gradle.marathon.helpers.VolumesHelper
-import com.wikia.gradle.marathon.helpers.CommandHelper
-import com.wikia.gradle.marathon.utils.GitHubFetcher
-import groovy.json.JsonBuilder
+import com.wikia.gradle.marathon.common.MarathonExtension
+import com.wikia.gradle.marathon.common.Stage
+import mesosphere.marathon.client.Marathon
+import mesosphere.marathon.client.MarathonClient
+import mesosphere.marathon.client.model.v2.App
+import mesosphere.marathon.client.model.v2.Container
+import mesosphere.marathon.client.model.v2.HealthCheck
 import org.gradle.api.DefaultTask
-import org.gradle.api.InvalidUserDataException
 import org.gradle.api.tasks.TaskAction
-import org.gradle.api.tasks.TaskValidationException
 
 class MarathonTask extends DefaultTask {
 
-    String stage = Defs.Stages.DEVELOPER;
+    Stage stage
+    MarathonExtension marathonExtension
 
-    // force and keep consistency
-    // i.e. you can only deploy if the current tag deployed is lower than current version
-    Boolean dockerTagPerVersion = false
-
-    Boolean useExternalConfig = true
-    Boolean allowOverrideOfExternalConfig = true
-
-    Map<String, String> githubEnvDataSource = [repo: "Wikia/indexing-pipeline", path: "python/env_defaults.sh"]
-
-    String marathonURL = "http://mesos-s1:8080"
-    String command
-    List<String> args
-
-    String dockerImage = "ubuntu:14.04.1"
-    String networkType = Defs.NetworkType.HOST
-
-    List<Map<String, String>> volumes
-
-    Float cpus = 1.5
-    Float mem = 300
-
-    Map<String, String> envs = new LinkedHashMap<String, String>()
-    Integer instances = null
-    List<Integer> ports
-
-    def configFetcher = new GitHubFetcher()
-    def marathon = new MarathonConnector(logger)
-
-    def buildRequestJson() {
-        def json = new JsonBuilder()
-        def root = json {
-            id(marathon_id())
-            container({
-                type Defs.ContainerType.DOCKER
-                docker(
-                        image: this.dockerImage,
-                        network: this.networkType,
-                        )
-                volumes(VolumesHelper.build(this))
-            })
-        }
-        if (!this.envs.isEmpty()) {
-            root.env = this.envs
-        }
-        root.cpus = this.cpus
-        root.mem = this.mem
-        if (this.instances != null) {
-            root.instances = this.instances
-        }
-        if (this.ports != null && !this.ports.isEmpty()) {
-            root.ports = this.ports
-        }
-
-        CommandHelper.build(this, root)
-        return json
+    String getDeploymentId() {
+        return "/" + [stage.name, project.group, project.name].join("/")
     }
 
-    def marathon_id() {
-        return "/" + [stage, project.group, project.name].join("/")
-    }
+    App prepareAppDescription() {
+        def app = new App()
+        app.setPorts(this.stage.resourcesConfig.ports)
+        app.setCpus(this.stage.resourcesConfig.cpus)
+        app.setMem(this.stage.resourcesConfig.mem)
+        app.setInstances(this.stage.resourcesConfig.instances)
+        app.setEnv(this.stage.environmentConfig.getEnv())
+        app.setId(this.getDeploymentId())
 
-    def processExternalConfig() {
-        if (this.useExternalConfig && this.githubEnvDataSource != null) {
-            def cfg = this.configFetcher.fetchWikiaConfig(this.githubEnvDataSource)
-            for (tuple in cfg) {
-                def key = tuple[0]
-                def val = tuple[1]
-                if (!(key && val)) {
-                    throw new TaskValidationException("external provided invalid value",
-                                                      [new InvalidUserDataException(
-                                                              key), new InvalidUserDataException(
-                                                              value)])
-                }
-                if (this.allowOverrideOfExternalConfig || !this.envs.containsKey(key)) {
-                    this.envs[key] = val
-                }
-            }
+        List<HealthCheck> healthChecks = this.marathonExtension.healthchecks.healthchecksProvider()
+
+        if (healthChecks.size() > 0) {
+            app.setHealthChecks(healthChecks)
         }
-    }
 
-    MarathonTask() {
-        if (project.group == '') {
-            throw new TaskValidationException("project.group needs to be set",
-                                              [new InvalidUserDataException('project.group')])
+        def appConfig = this.marathonExtension.appConfig
+        if (appConfig.isDocker()) {
+            Container container = new Container()
+            container.type = "DOCKER"
+            container.docker.image = appConfig.imageProvider(project)
+            container.docker.network = "HOST"
+            app.setContainer(container)
+        } else {
+            app.setUris(Arrays.asList(appConfig.uriProvider(project)))
         }
-    }
 
-    def validateData() {
-        CommandHelper.validate(this)
-        VolumesHelper.validate(this)
+        app.setCmd(appConfig.cmdProvider(project))
+        app
     }
 
     @TaskAction
-    def postApp() {
-        this.validateData()
-        this.processExternalConfig()
-        this.marathon.
-                postConfig(this.marathonURL, this.marathon_id(), this.buildRequestJson().toString(),
-                           this.dockerTagPerVersion)
+    def setupApp() {
+        this.marathonExtension.resolve(this.stage)
+        this.marathonExtension.validate(this.stage)
+        Marathon marathon = MarathonClient.getInstance(this.stage.marathonConfig.url)
+        marathon.createApp(prepareAppDescription())
     }
 }

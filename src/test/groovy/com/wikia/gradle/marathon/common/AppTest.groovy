@@ -24,7 +24,7 @@ class AppTest {
     void "test dsl generating proper arguments for Dropwizard application"() {
         def app = new App()
         def dsl = {
-            mavenSource("http://repo-url")
+            mavenSource("http://repo-url", "taskDependency")
             dropwizardApplication("config-name")
         }
         dsl.delegate = app
@@ -38,7 +38,7 @@ class AppTest {
     void "test dsl generating proper uri for default application"() {
         def app = new App()
         def dsl = {
-            mavenSource("https://oss.sonatype.org/content/groups/google-with-staging")
+            mavenSource("https://oss.sonatype.org/content/groups/google-with-staging", "dependency")
         }
         dsl.delegate = app
         dsl()
@@ -52,7 +52,7 @@ class AppTest {
     void "test dsl generating proper command for Dropwizard application"() {
         def app = new App()
         def dsl = {
-            mavenSource("https://oss.sonatype.org/content/groups/google-with-staging")
+            mavenSource("https://oss.sonatype.org/content/groups/google-with-staging", "taskDependency")
             dropwizardApplication("config-name")
         }
         dsl.delegate = app

@@ -22,10 +22,10 @@ class Resources {
     }
 
     def validate() {
-        ["cpus", "mem", "instances", "ports"].forEach({ item ->
-            if (this.properties.get(item) == null){
+        for (item in ["cpus", "mem", "instances", "ports"]) {
+            if (this.properties.get(item) == null) {
                 throw new RuntimeException("Resources.${item} needs to be set")
             }
-        })
+        }
     }
 }
