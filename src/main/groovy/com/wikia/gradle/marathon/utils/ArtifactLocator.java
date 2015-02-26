@@ -83,6 +83,9 @@ public class ArtifactLocator {
         res =
         this.system.resolveMetadata(this.session, Arrays.asList(metadataRequest));
     MetadataResult metadataResult = res.get(0);
+    if (res.size() == 0 || metadataResult.getMetadata() == null ){
+      throw new RuntimeException("Failed fetching artifact metadata from repository");
+    }
 
     Map<String, ?> options = Collections.singletonMap(MetadataReader.IS_STRICT, Boolean.FALSE);
 

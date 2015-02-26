@@ -55,7 +55,7 @@ class App {
     }
 
     def isMaven() {
-        this.uri != null
+        this.mavenPublishTaskName != null
     }
 
     def isDocker() {
