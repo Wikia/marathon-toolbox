@@ -17,7 +17,7 @@ class AppTest {
                 .build()
         project.ext.distZip = [extension: "zip", archiveName: "test-zzz.zip"]
         project.ext.applicationName = "appName"
-        project
+        return project
     }
 
     @Test
