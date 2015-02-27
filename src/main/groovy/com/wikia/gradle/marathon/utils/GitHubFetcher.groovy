@@ -9,22 +9,12 @@ class GitHubFetcher{
     String path
 
     def provide(){
-        Map<String, String> fileLocation = [
-                repo: this.repository,
-                path: this.path]
-        fetchWikiaConfig(fileLocation)
-    }
-    //TODO: remove old compat code
-    def fetchWikiaConfig(fileLocation) {
-        Map<String, String> githubEnvDataSource = [repo: "Wikia/indexing-pipeline", path: "python/env_defaults.sh"]
-
-        // ideally this stuff will be read from Consul or something
         GitHub gh = GitHub.connect()
-        if (fileLocation["repo"] && fileLocation["path"]) {
-            def repo = gh.getRepository(fileLocation["repo"])
-            return parse_env_defaults(repo.getFileContent(fileLocation["path"]).content)
+        if ( this.repository && this.path) {
+            def repo = gh.getRepository(this.repository)
+            return parse_env_defaults(repo.getFileContent(this.path).content)
         } else {
-            throw new TaskValidationException("external config location not set", [new InvalidUserDataException(externalConfigSourcePerStage[stage])])
+            throw new TaskValidationException("external config location not set", [new InvalidUserDataException(this)])
         }
     }
 
@@ -44,7 +34,4 @@ class GitHubFetcher{
         }
         return envs
     }
-
-
-
 }

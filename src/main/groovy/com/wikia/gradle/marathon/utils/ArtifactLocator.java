@@ -83,7 +83,7 @@ public class ArtifactLocator {
         res =
         this.system.resolveMetadata(this.session, Arrays.asList(metadataRequest));
     MetadataResult metadataResult = res.get(0);
-    if (res.size() == 0 || metadataResult.getMetadata() == null ){
+    if (metadataResult.getMetadata() == null ){
       throw new RuntimeException("Failed fetching artifact metadata from repository");
     }
 
@@ -107,7 +107,6 @@ public class ArtifactLocator {
 
     // this newVersion schema is taken from Maven code, there is no library call available
     String newVersion = snapshot.getTimestamp() + "-" + snapshot.getBuildNumber();
-    System.err.println(getArtifactPath(artifact));
     return StringUtils.replace(
         this.getArtifactPath(artifact),
         org.apache.maven.artifact.Artifact.SNAPSHOT_VERSION + "." + artifact.getExtension(),

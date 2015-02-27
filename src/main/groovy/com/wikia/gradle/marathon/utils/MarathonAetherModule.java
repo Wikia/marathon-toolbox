@@ -1,6 +1,5 @@
 package com.wikia.gradle.marathon.utils;
 
-import com.google.common.io.Files;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.name.Names;
@@ -12,15 +11,12 @@ import org.apache.maven.repository.internal.DefaultVersionRangeResolver;
 import org.apache.maven.repository.internal.DefaultVersionResolver;
 import org.apache.maven.repository.internal.SnapshotMetadataGeneratorFactory;
 import org.apache.maven.repository.internal.VersionsMetadataGeneratorFactory;
-import org.eclipse.aether.DefaultRepositorySystemSession;
-import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory;
 import org.eclipse.aether.impl.ArtifactDescriptorReader;
 import org.eclipse.aether.impl.MetadataGeneratorFactory;
 import org.eclipse.aether.impl.VersionRangeResolver;
 import org.eclipse.aether.impl.VersionResolver;
 import org.eclipse.aether.impl.guice.AetherModule;
-import org.eclipse.aether.repository.LocalRepository;
 import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
 import org.eclipse.aether.spi.connector.transport.TransporterFactory;
 import org.eclipse.aether.transport.file.FileTransporterFactory;
@@ -32,7 +28,6 @@ import java.util.Set;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
-
 
 public class MarathonAetherModule extends AbstractModule {
 
@@ -59,7 +54,7 @@ public class MarathonAetherModule extends AbstractModule {
         .to(HttpTransporterFactory.class);
   }
 
-    @Provides
+  @Provides
   @Singleton
   Set<MetadataGeneratorFactory> provideMetadataGeneratorFactories(
       @Named("snapshot") MetadataGeneratorFactory snapshot,
@@ -70,13 +65,7 @@ public class MarathonAetherModule extends AbstractModule {
 
     return Collections.unmodifiableSet(factories);
   }
-//
-//  @Override
-//  protected void configure() {
-//    install(new MavenAetherModule());
 
-  //  }
-//
   @Provides
   @Singleton
   Set<RepositoryConnectorFactory> provideRepositoryConnectorFactories(
@@ -85,7 +74,6 @@ public class MarathonAetherModule extends AbstractModule {
     factories.add(basic);
     return Collections.unmodifiableSet(factories);
   }
-
 
   @Provides
   @Singleton

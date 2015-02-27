@@ -10,15 +10,11 @@ class Resources {
     def instances
     List<Integer> ports
 
-    def provideOneRandomPort() {
+    def useRandomPorts(Integer num) {
         ports = new ArrayList<>()
-        ports.add(0) // 0 means random port will be assigned by marathon
-    }
-
-    def provideTwoRandomPorts() {
-        ports = new ArrayList<>()
-        ports.add(0)
-        ports.add(0)
+        for (int i = 0; i < num; i++) {
+            ports.add(0) // 0 means random port will be assigned by marathon
+        }
     }
 
     def validate() {

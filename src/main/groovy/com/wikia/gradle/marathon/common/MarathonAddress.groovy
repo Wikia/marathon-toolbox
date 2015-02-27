@@ -7,16 +7,6 @@ import groovy.transform.AutoClone
 class MarathonAddress {
 
     String url
-    GitHubFetcher gitHubFetcher
-
-    def readConfigFromGithub(Closure closure) {
-        if (gitHubFetcher == null) {
-            gitHubFetcher = new GitHubFetcher()
-        }
-        closure.delegate = gitHubFetcher
-        closure()
-        gitHubFetcher.validate()
-    }
 
     def validate() {
         if (this.properties.get("url") == null) {

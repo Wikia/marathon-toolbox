@@ -11,7 +11,7 @@ class Environment {
         dslProvidedEnvironment.each {key, closure ->
             rv.put(key, closure())
         }
-        rv
+        return rv
     }
 
     def propertyMissing(String name, rawValue) {

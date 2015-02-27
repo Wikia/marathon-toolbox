@@ -27,7 +27,7 @@ public class MarathonExtension {
 
     def healthchecks(Closure closure) {
         closure.delegate = healthchecks
-        closure
+        closure()
     }
 
     def environment(Closure closure) {

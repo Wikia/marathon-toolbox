@@ -17,7 +17,6 @@ artifacts {
 publishing {
     repositories {
         maven {
-//            uniqueVersion false
             credentials {
                 username archivaUsername
                 password archivaPassword
@@ -31,10 +30,6 @@ publishing {
     }
     publications {
         library(MavenPublication) {
-//            if (project.version.endsWith("-SNAPSHOT")) {
-//                version project.version.replace("-SNAPSHOT", )
-//            }
-
             from components.java
             artifact sourcesJar
             artifact javadocJar

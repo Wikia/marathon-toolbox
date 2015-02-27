@@ -62,10 +62,6 @@ class App {
         this.image != null
     }
 
-    def useHealtcheck() {
-        this.portIndex != null && this.healtcheckPath != null
-    }
-
     def validate() {
         if (this.cmd == null) {
             throw new RuntimeException("App.cmd needs to be set")
