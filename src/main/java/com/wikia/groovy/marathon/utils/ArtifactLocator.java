@@ -82,17 +82,16 @@ public class ArtifactLocator {
     List<MetadataResult>
         res =
         this.system.resolveMetadata(this.session, Arrays.asList(metadataRequest));
-    MetadataResult metadataResult = res.get(0);
-    if (metadataResult.getMetadata() == null ){
+
+    if (res.size() == 0 || res.get(0).getMetadata() == null) {
       throw new RuntimeException("Failed fetching artifact metadata from repository");
     }
-
     Map<String, ?> options = Collections.singletonMap(MetadataReader.IS_STRICT, Boolean.FALSE);
 
     Metadata mavenMetadata;
     try {
       mavenMetadata = new DefaultMetadataReader().
-          read(metadataResult.getMetadata().getFile(), options);
+          read(res.get(0).getMetadata().getFile(), options);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
