@@ -1,4 +1,4 @@
-package com.wikia.gradle.marathon.utils;
+package com.wikia.groovy.marathon.utils;
 
 import com.google.common.io.Files;
 import com.google.inject.Guice;

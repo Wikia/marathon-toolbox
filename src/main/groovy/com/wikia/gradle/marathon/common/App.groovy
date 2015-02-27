@@ -1,6 +1,6 @@
 package com.wikia.gradle.marathon.common
 
-import com.wikia.gradle.marathon.utils.ArtifactLocator
+import com.wikia.groovy.marathon.utils.ArtifactLocator
 import org.gradle.api.Project
 
 class App {
