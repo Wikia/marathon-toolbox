@@ -129,8 +129,6 @@ class MarathonExtensionTest {
         def dsl = {
             globalDefaults {
                 resources {
-                    System.err.println("d")
-//                new Exception().printStackTrace()
                     cpus = 10
                     mem = 10
                     useRandomPorts(2)
@@ -138,15 +136,11 @@ class MarathonExtensionTest {
             }
             testing {
                 resources {
-                    System.err.println("t")
-//                    new Exception().printStackTrace()
                     mem = 2
                 }
             }
             production {
                 resources {
-                    System.err.println("p")
-//                    new Exception().printStackTrace()
                     cpus = 1
                     mem = 1
                 }
