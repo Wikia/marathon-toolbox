@@ -3,11 +3,11 @@ package com.wikia.gradle.marathon.common
 import groovy.transform.AutoClone
 
 @AutoClone
-class Resources {
+class Resources implements Validating {
 
-    def cpus
-    def mem
-    def instances
+    Double cpus
+    Double mem
+    Integer instances
     List<Integer> ports
 
     def useRandomPorts(Integer num) {

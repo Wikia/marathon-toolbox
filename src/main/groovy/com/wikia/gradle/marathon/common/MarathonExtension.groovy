@@ -4,60 +4,46 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 public class MarathonExtension {
-
     Logger logger = LoggerFactory.getLogger(MarathonExtension)
-    Stage baseStage = new Stage()
-    App appConfig = new App()
-    Healthchecks healthchecks = new Healthchecks()
+    Stage globalDefaults = new Stage()
 
     private Map<String, Stage> stages = new HashMap<>()
 
-    def resources(Closure closure) {
-        baseStage.resources(closure)
-    }
-
-    def marathon(Closure closure) {
-        baseStage.marathon(closure)
-    }
-
-    def app(Closure closure) {
-        closure.delegate = appConfig
+    def globalDefaults(Closure closure) {
+        closure.delegate = this.globalDefaults
         closure()
     }
 
-    def healthchecks(Closure closure) {
-        closure.delegate = healthchecks
-        closure()
+
+    def methodMissing(String name, args) {
+        Object[] varArgs = args
+        if (args.size() == 1 && varArgs[0] instanceof Closure) {
+            Stage stage = new Stage()
+            stage.name = name
+            setupAndAddStage(stage, varArgs[0] as Closure)
+        } else {
+            throw new RuntimeException("Deployment configuration must be declared using single Closure")
+        }
     }
 
-    def environment(Closure closure) {
-        baseStage.environment(closure)
+    def propertyMissing(String name, dslClosure) {
+        if (dslClosure instanceof Closure) {
+            Stage stage = new Stage()
+            stage.name = name
+            setupAndAddStage(stage, dslClosure)
+            return stage
+        } else {
+            throw new RuntimeException("Deployment configuration must be declared using Closure")
+        }
     }
 
-    def newStage(Closure closure) {
-        return setupAndAddStage(new Stage(), closure)
+    Stage getStage(String name){
+        Stage rv = this.stages.get(name)
+        rv.clone().insertBefore(this.globalDefaults)
     }
 
-    def production(Closure closure) {
-        def stage = new Stage()
-        stage.name = "production"
-        return setupAndAddStage(stage, closure)
-    }
-
-    def integration(Closure closure) {
-        def stage = new Stage()
-        stage.name = "integration"
-        return setupAndAddStage(stage, closure)
-    }
-
-    def testing(Closure closure) {
-        def stage = new Stage()
-        stage.name = "testing"
-        return setupAndAddStage(stage, closure)
-    }
-
-    def Map<String, Stage> getStages() {
-        return this.stages
+    Set<String> getStageNames() {
+        return stages.keySet()
     }
 
     private def setupAndAddStage(Stage stage, Closure closure) {
@@ -67,20 +53,9 @@ public class MarathonExtension {
             throw new RuntimeException("Stage.name is missing")
         }
         if (stages.containsKey(stage.name)) {
-            logger.warn("Overwriting stage ${stage.name} configuration")
+            stage.insertBefore(stages.get(stage.name))
         }
         stages.put(stage.name, stage)
         return stage
-    }
-
-    def resolve(Stage stage) {
-        this.baseStage.resolve()
-        stage.resolve(this.baseStage)
-        return stage
-    }
-
-    def validate(Stage stage){
-        stage.validate()
-        appConfig.validate()
     }
 }

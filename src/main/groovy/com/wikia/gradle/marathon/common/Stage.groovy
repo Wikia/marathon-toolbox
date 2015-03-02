@@ -2,54 +2,63 @@ package com.wikia.gradle.marathon.common
 
 import groovy.transform.AutoClone
 
+import static com.wikia.gradle.marathon.common.ConfigResolver.*
+
 @AutoClone
 class Stage {
 
-    String name = null
-    Resources resourcesConfig = new Resources()
-    Environment environmentConfig = new Environment()
-    MarathonAddress marathonConfig = new MarathonAddress()
+    String name
+    Map<Class<? extends Validating>, Closure<? extends Validating>> closures = new HashMap<>()
 
-    Closure marathonClosure = ConfigResolver.noop()
-    Closure environmentClosure = ConfigResolver.noop()
-    Closure resourcesClosure = ConfigResolver.noop()
-
-    def resources(Closure closure) {
-        this.resourcesClosure = ConfigResolver.stackClosures(
-                ConfigResolver.dslToParamClosure(closure), this.resourcesClosure
-        )
+    def resources(Closure dsl) {
+        closures.put(Resources, stackClosures(
+                dslToParamClosure(dsl), closures.get(Resources)
+        ))
     }
 
-    def environment(Closure closure) {
-        this.environmentClosure = ConfigResolver.stackClosures(
-                ConfigResolver.dslToParamClosure(closure), this.environmentClosure
-        )
+    def environment(Closure dsl) {
+        closures.put(Environment, stackClosures(
+                dslToParamClosure(dsl), closures.get(Environment)
+        ))
     }
 
-    def marathon(Closure closure) {
-        this.marathonClosure = ConfigResolver.stackClosures(
-                ConfigResolver.dslToParamClosure(closure),
-                this.marathonClosure
-        )
+    def marathon(Closure dsl) {
+        closures.put(MarathonAddress, stackClosures(
+                dslToParamClosure(dsl), closures.get(MarathonAddress)
+        ))
+    }
+
+    def app(Closure dsl) {
+        closures.put(App, stackClosures(
+                dslToParamClosure(dsl), closures.get(App)
+        ))
+    }
+
+    def healthchecks(Closure dsl) {
+        closures.put(Healthchecks, stackClosures(
+                dslToParamClosure(dsl), closures.get(Healthchecks)
+        ))
     }
 
     def validate() {
-        ["name"].each({ item ->
-            if (this.properties.get(item) == null) {
-                throw new RuntimeException("Stage.${item} needs to be set")
-            }
-        })
-        this.marathonConfig.validate()
-        this.resourcesConfig.validate()
+        if (this.name == null) {
+            throw new RuntimeException("Stage.name needs to be set")
+        }
+        for (Class<? extends Validating> klass in this.closures.keySet()) {
+            this.resolve(klass).validate()
+        }
+        return this
     }
 
-    def resolve(Stage from = null) {
-        if (from == null) {
-            from = this
+    def insertBefore(Stage from) {
+        for (Class clazz in from.closures.keySet()) {
+            this.closures.
+                    put(clazz, stackClosures(this.closures.get(clazz), from.closures.get(clazz)))
         }
-        this.marathonConfig = this.getMarathonClosure()(from.marathonConfig)
-        this.environmentConfig = this.getEnvironmentClosure()(from.environmentConfig)
-        this.resourcesConfig = this.getResourcesClosure()(from.resourcesConfig)
         return this
+    }
+
+    public <T> T resolve(Class<T> clazz) {
+        return resolveConfig(this.closures.get(clazz), clazz as Class<? extends Validating>) as T
     }
 }

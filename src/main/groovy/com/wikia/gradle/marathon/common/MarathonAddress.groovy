@@ -1,10 +1,9 @@
 package com.wikia.gradle.marathon.common
 
-import com.wikia.gradle.marathon.utils.GitHubFetcher
 import groovy.transform.AutoClone
 
 @AutoClone
-class MarathonAddress {
+class MarathonAddress implements Validating {
 
     String url
 

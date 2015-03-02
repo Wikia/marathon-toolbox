@@ -1,9 +1,11 @@
 package com.wikia.gradle.marathon.common
 
 import com.wikia.groovy.marathon.utils.ArtifactLocator
+import groovy.transform.AutoClone
 import org.gradle.api.Project
 
-class App {
+@AutoClone
+class App implements Validating {
 
     Closure<String> image = null
     Closure<String> uri = null
@@ -95,4 +97,3 @@ class App {
         this.image(project)
     }
 }
-
