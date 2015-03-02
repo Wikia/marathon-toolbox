@@ -2,25 +2,36 @@ package com.wikia.gradle.marathon.common
 
 class ConfigResolver {
 
-    static Closure dslToParamClosure(Closure closure) {
-        return { param ->
+    static <T> Closure<T> dslToParamClosure(Closure<T> closure) {
+        return { T param ->
+            param = param.clone() as T
+            closure.resolveStrategy = Closure.DELEGATE_FIRST
             closure.delegate = param
             closure()
-            param
+            return param
         }
     }
 
-    static Closure stackClosures(Closure newClosure, Closure oldClosure) {
-        if (oldClosure == null) {
-            return newClosure
+    static <T> T resolveConfig(Closure<T> closure, Class<T> klass) {
+        def instance = klass.newInstance()
+        if (closure == null) {
+            return instance
         } else {
-            return { param ->
-                newClosure(oldClosure(param))
+            return closure(klass.newInstance())
+        }
+    }
+
+    static <T> Closure<T> stackClosures(Closure<T> outerClosure, Closure<T> innerClosure) {
+        if (outerClosure == null) {
+            return innerClosure
+        } else if (innerClosure == null) {
+            return outerClosure
+        } else {
+            return { T param ->
+                return outerClosure(
+                        innerClosure(param)
+                )
             }
         }
-    }
-
-    static Closure noop() {
-        return { param -> param }
     }
 }

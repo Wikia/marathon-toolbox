@@ -1,6 +1,10 @@
 package com.wikia.gradle.marathon
 
+import com.wikia.gradle.marathon.common.Environment
+import com.wikia.gradle.marathon.common.Healthchecks
+import com.wikia.gradle.marathon.common.MarathonAddress
 import com.wikia.gradle.marathon.common.MarathonExtension
+import com.wikia.gradle.marathon.common.Resources
 import com.wikia.gradle.marathon.common.Stage
 import mesosphere.marathon.client.Marathon
 import mesosphere.marathon.client.MarathonClient
@@ -13,7 +17,6 @@ import org.gradle.api.tasks.TaskAction
 class MarathonTask extends DefaultTask {
 
     Stage stage
-    MarathonExtension marathonExtension
 
     String getDeploymentId() {
         return "/" + [stage.name, project.group, project.name].join("/")
@@ -21,20 +24,21 @@ class MarathonTask extends DefaultTask {
 
     App prepareAppDescription() {
         def app = new App()
-        app.setPorts(this.stage.resourcesConfig.ports)
-        app.setCpus(this.stage.resourcesConfig.cpus)
-        app.setMem(this.stage.resourcesConfig.mem)
-        app.setInstances(this.stage.resourcesConfig.instances)
-        app.setEnv(this.stage.environmentConfig.getEnv())
+        def res = this.stage.resolve(Resources)
+        app.setPorts(res.ports)
+        app.setCpus(res.cpus)
+        app.setMem(res.mem)
+        app.setInstances(res.instances)
+        app.setEnv(this.stage.resolve(Environment).getEnv())
         app.setId(this.getDeploymentId())
 
-        List<HealthCheck> healthChecks = this.marathonExtension.healthchecks.healthchecksProvider()
+        List<HealthCheck> healthChecks = this.stage.resolve(Healthchecks).healthchecksProvider()
 
         if (healthChecks.size() > 0) {
             app.setHealthChecks(healthChecks)
         }
 
-        def appConfig = this.marathonExtension.appConfig
+        def appConfig = this.stage.resolve(com.wikia.gradle.marathon.common.App)
         if (appConfig.isDocker()) {
             Container container = new Container()
             container.type = "DOCKER"
@@ -46,14 +50,13 @@ class MarathonTask extends DefaultTask {
         }
 
         app.setCmd(appConfig.cmdProvider(project))
-        app
+        return app
     }
 
     @TaskAction
     def setupApp() {
-        this.marathonExtension.resolve(this.stage)
-        this.marathonExtension.validate(this.stage)
-        Marathon marathon = MarathonClient.getInstance(this.stage.marathonConfig.url)
+        this.stage = stage.validate()
+        Marathon marathon = MarathonClient.getInstance(this.stage.resolve(MarathonAddress).url)
         marathon.createApp(prepareAppDescription())
     }
 }

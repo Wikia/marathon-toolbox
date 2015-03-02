@@ -1,6 +1,8 @@
 package com.wikia.gradle.marathon
 
+import com.wikia.gradle.marathon.common.App
 import com.wikia.gradle.marathon.common.MarathonExtension
+import com.wikia.gradle.marathon.common.Stage
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -14,22 +16,20 @@ class MarathonPlugin implements Plugin<Project> {
         project.afterEvaluate { evaluatedProject ->
             def deployments = evaluatedProject.extensions.
                     getByName("deployments") as MarathonExtension
-            deployments.stages.values().each { newStage ->
-                evaluatedProject.task("setup${newStage.name.capitalize()}", type: MarathonTask) {
+            deployments.getStageNames().each { stageName ->
+                evaluatedProject.task("setup${stageName.capitalize()}", type: MarathonTask) {
                     group = "Marathon Setup"
-                    description = "Setup configured stage: ${newStage.name}"
-                    stage = newStage
-                    marathonExtension = deployments
-                    deployments.resolve(stage).validate()
+                    description = "Setup configured stage: ${stageName}"
+                    stage = deployments.getStage(stageName).validate()
                 }
-                if (deployments.appConfig.isMaven()) {
+
+                if (deployments.getStage(stageName).resolve(App).isMaven()) {
                     evaluatedProject.
-                            task("deploy${newStage.name.capitalize()}", type: MarathonTask) {
+                            task("deploy${stageName.capitalize()}", type: MarathonTask) {
                                 group = "Marathon Deployment"
-                                description = "Deploy configured stage: ${newStage.name}"
-                                stage = newStage
-                                marathonExtension = deployments
-                                dependsOn(deployments.appConfig.mavenPublishTaskName)
+                                description = "Deploy configured stage: ${stageName}"
+                                stage = deployments.getStage(stageName).validate()
+                                dependsOn(stage.resolve(App).mavenPublishTaskName)
                             }
                 }
             }

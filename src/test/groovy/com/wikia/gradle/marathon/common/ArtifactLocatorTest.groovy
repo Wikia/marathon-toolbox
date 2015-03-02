@@ -12,7 +12,6 @@ public class ArtifactLocatorTest {
      */
     @Test
     public void test() {
-
         ArtifactLocator al =
                 new ArtifactLocator("https://oss.sonatype.org/content/groups/google-with-staging");
         String url = al.getUrl("com.google.gwt", "gwt", "jar", "2.6-SNAPSHOT");
