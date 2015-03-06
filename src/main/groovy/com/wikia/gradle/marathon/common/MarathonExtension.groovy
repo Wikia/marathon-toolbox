@@ -14,7 +14,6 @@ public class MarathonExtension {
         closure()
     }
 
-
     def methodMissing(String name, args) {
         Object[] varArgs = args
         if (args.size() == 1 && varArgs[0] instanceof Closure) {
@@ -23,17 +22,6 @@ public class MarathonExtension {
             setupAndAddStage(stage, varArgs[0] as Closure)
         } else {
             throw new RuntimeException("Deployment configuration must be declared using single Closure")
-        }
-    }
-
-    def propertyMissing(String name, dslClosure) {
-        if (dslClosure instanceof Closure) {
-            Stage stage = new Stage()
-            stage.name = name
-            setupAndAddStage(stage, dslClosure)
-            return stage
-        } else {
-            throw new RuntimeException("Deployment configuration must be declared using Closure")
         }
     }
 
