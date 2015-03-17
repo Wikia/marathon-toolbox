@@ -1,7 +1,7 @@
 apply plugin: 'groovy'
 apply from: rootProject.file('gradle/deploy.gradle')
 
-version = '0.5.3'
+version = '0.5.4'
 group = 'com.wikia.gradle'
 sourceCompatibility = 1.7
 
@@ -20,7 +20,7 @@ dependencies {
     compile 'com.google.guava:guava:18.0'
     compile 'com.github.zafarkhaja:java-semver:0.8.0'
     compile 'org.kohsuke:github-api:1.59'
-    compile 'com.github.pchojnacki:marathon-client:0.4.3'
+    compile 'com.github.pchojnacki:marathon-client:0.4.4'
 
     compile "org.eclipse.aether:aether-api:${aetherVersion}"
     compile "org.eclipse.aether:aether-impl:${aetherVersion}"

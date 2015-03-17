@@ -1,11 +1,6 @@
 package com.wikia.gradle.marathon
 
-import com.wikia.gradle.marathon.common.Environment
-import com.wikia.gradle.marathon.common.Healthchecks
-import com.wikia.gradle.marathon.common.MarathonAddress
-import com.wikia.gradle.marathon.common.MarathonExtension
-import com.wikia.gradle.marathon.common.Resources
-import com.wikia.gradle.marathon.common.Stage
+import com.wikia.gradle.marathon.common.*
 import mesosphere.marathon.client.Marathon
 import mesosphere.marathon.client.MarathonClient
 import mesosphere.marathon.client.model.v2.App
@@ -16,6 +11,8 @@ import org.gradle.api.tasks.TaskAction
 
 class MarathonTask extends DefaultTask {
 
+    public static final String FORCE_UPDATE = 'marathon.forceUpdate'
+    public static final String PRESERVE_INSTANCE_ALLOCATION = 'marathon.preserveInstanceAllocation'
     Stage stage
 
     String getDeploymentId() {
@@ -57,6 +54,24 @@ class MarathonTask extends DefaultTask {
     def setupApp() {
         this.stage = stage.validate()
         Marathon marathon = MarathonClient.getInstance(this.stage.resolve(MarathonAddress).url)
-        marathon.createApp(prepareAppDescription())
+        def app = prepareAppDescription()
+
+        def existingApp = marathon.getApp(app.getId())
+
+        if (existingApp.getApp() != null) {
+            if (project.hasProperty(PRESERVE_INSTANCE_ALLOCATION) &&
+                project.property(PRESERVE_INSTANCE_ALLOCATION).toString().toBoolean()) {
+                app.instances = existingApp.getApp().instances;
+            }
+
+            if (project.hasProperty(FORCE_UPDATE)) {
+                marathon.updateApp(app.getId(), app,
+                                   project.property(FORCE_UPDATE).toString().toBoolean())
+            } else {
+                marathon.updateApp(app.getId(), app, false)
+            }
+        } else {
+            marathon.createApp(app)
+        }
     }
 }
