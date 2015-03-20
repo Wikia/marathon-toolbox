@@ -1,7 +1,7 @@
 apply plugin: 'groovy'
 apply from: rootProject.file('gradle/deploy.gradle')
 
-version = '0.5.5'
+version = '0.5.6'
 group = 'com.wikia.gradle'
 sourceCompatibility = 1.7
 
