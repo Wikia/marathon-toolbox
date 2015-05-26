@@ -31,8 +31,11 @@ class App implements Validating {
             "${executablePath(project)} ${arguments(project).join(" ")}"
         }
     }
-
     def dropwizardApplication(String configName = null) {
+        dropwizardCommand("server", configName)
+    }
+
+    def dropwizardCommand(String command, String configName = null) {
         def subdir = { Project project ->
             project.distZip.archiveName - ".${project.distZip.extension}"
         }
@@ -44,7 +47,7 @@ class App implements Validating {
             if (configName == null) {
                 configName = "${project.name}.yaml"
             }
-            ["server", "${subdir(project)}/conf/${configName}"]
+            [command, "${subdir(project)}/conf/${configName}"]
         }
         artifactExtension = "zip"
     }
@@ -71,7 +74,7 @@ class App implements Validating {
         if (this.isMaven()) {
             if (this.executablePath == null) {
                 throw new RuntimeException(
-                        "ExecutablePath not set. Did you forget to declare application?")
+                        "ExecutablePath not set. Did you forget to declare an application?")
             }
         }
         if (this.arguments == null) {
