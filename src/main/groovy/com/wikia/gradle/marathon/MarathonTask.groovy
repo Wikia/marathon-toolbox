@@ -6,6 +6,7 @@ import mesosphere.marathon.client.MarathonClient
 import mesosphere.marathon.client.model.v2.App
 import mesosphere.marathon.client.model.v2.Container
 import mesosphere.marathon.client.model.v2.HealthCheck
+import mesosphere.marathon.client.utils.MarathonException
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
@@ -55,13 +56,16 @@ class MarathonTask extends DefaultTask {
         this.stage = stage.validate()
         Marathon marathon = MarathonClient.getInstance(this.stage.resolve(MarathonAddress).url)
         def app = prepareAppDescription()
-
-        def existingApp = marathon.getApp(app.getId())
-
-        if (existingApp.getApp() != null) {
+        def existingApp
+        try {
+            existingApp = marathon.getApp(app.getId()).getApp()
+        } catch (MarathonException ex ){
+            existingApp = null
+        }
+        if (existingApp != null) {
             if (project.hasProperty(PRESERVE_INSTANCE_ALLOCATION) &&
                 project.property(PRESERVE_INSTANCE_ALLOCATION).toString().toBoolean()) {
-                app.instances = existingApp.getApp().instances;
+                app.instances = existingApp.instances;
             }
 
             if (project.hasProperty(FORCE_UPDATE)) {
