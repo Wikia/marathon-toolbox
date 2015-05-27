@@ -1,5 +1,6 @@
 package com.wikia.gradle.marathon.common
 
+import com.sun.org.apache.xpath.internal.operations.Bool
 import com.wikia.groovy.marathon.utils.ArtifactLocator
 import groovy.transform.AutoClone
 import org.gradle.api.Project
@@ -31,11 +32,11 @@ class App implements Validating {
             "${executablePath(project)} ${arguments(project).join(" ")}"
         }
     }
-    def dropwizardApplication(String configName = null) {
-        dropwizardCommand("server", configName)
+    def dropwizardApplication(String configName = null, Boolean useClasspath = false) {
+        dropwizardCommand("server", configName, useClasspath)
     }
 
-    def dropwizardCommand(String command, String configName = null) {
+    def dropwizardCommand(String command, String configName = null, Boolean useClasspath = false) {
         def subdir = { Project project ->
             project.distZip.archiveName - ".${project.distZip.extension}"
         }
@@ -47,7 +48,13 @@ class App implements Validating {
             if (configName == null) {
                 configName = "${project.name}.yaml"
             }
-            [command, "${subdir(project)}/conf/${configName}"]
+            def param
+            if (useClasspath) {
+                param = "classpath:${configName}"
+            } else {
+                param =  "${subdir(project)}/conf/${configName}"
+            }
+            [command, param]
         }
         artifactExtension = "zip"
     }
