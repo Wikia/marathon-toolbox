@@ -31,25 +31,49 @@ class App implements Validating {
             "${executablePath(project)} ${arguments(project).join(" ")}"
         }
     }
+
+    @Deprecated
     def dropwizardApplication(String configName = null) {
         dropwizardCommand("server", configName)
     }
 
-    def dropwizardCommand(String command, String configName = null) {
-        def subdir = { Project project ->
-            project.distZip.archiveName - ".${project.distZip.extension}"
-        }
+    def dropwizardCommand(String command, String configName = "") {
+        executeApplicationZip(command, { Project project ->
+            if (configName == null || configName.isEmpty()) {
+                configName = "${project.name}.yaml"
+            }
+            "${subdirInZip(project)}/conf/${configName}"
+        })
+
+        this.artifactExtension = "zip"
+    }
+
+    def dropwizardCommandClasspathConfig(String command, String configName = "",
+                                         String classpathConfigPathPrefix = "") {
+        executeApplicationZip(command, { Project project ->
+            if (configName == null || configName.isEmpty()) {
+                configName = "${project.name}.yaml"
+            }
+            "classpath:${classpathConfigPathPrefix}${configName}"
+        })
+    }
+
+    def executeApplicationZip(Object... args) {
         this.executablePath = { Project project ->
-            "${subdir(project)}/bin/${project.applicationName}"
+            "${subdirInZip(project)}/bin/${project.applicationName}"
         }
 
         this.arguments = { Project project ->
-            if (configName == null) {
-                configName = "${project.name}.yaml"
-            }
-            [command, "${subdir(project)}/conf/${configName}"]
+            args.collect({ arg ->
+                if (arg instanceof Closure) {
+                    return arg(project).toString()
+                } else {
+                    return arg.toString()
+                }
+            })
         }
-        artifactExtension = "zip"
+
+        this.artifactExtension = "zip"
     }
 
     def dockerSource(imageName) {
@@ -98,5 +122,9 @@ class App implements Validating {
 
     String imageProvider(Project project) {
         this.image(project)
+    }
+
+    private static String subdirInZip(Project project) {
+        project.distZip.archiveName - ".${project.distZip.extension}"
     }
 }

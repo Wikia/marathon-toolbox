@@ -4,7 +4,7 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Test
 
-import static org.junit.Assert.assertEquals
+import static GroovyTestCase.assertEquals
 
 class AppTest {
 
@@ -30,7 +30,7 @@ class AppTest {
         dsl.delegate = app
         dsl()
 
-        GroovyTestCase.assertEquals(app.getArguments()(testProject()),
+        assertEquals(app.getArguments()(testProject()),
                                     ["server", "test-zzz/conf/config-name"])
     }
 
@@ -52,12 +52,42 @@ class AppTest {
     void "test dsl generating proper command for Dropwizard application"() {
         def app = new App()
         def dsl = {
-            mavenSource("https://oss.sonatype.org/content/groups/google-with-staging", "taskDependency")
-            dropwizardApplication("config-name")
+            mavenSource("https://oss.sonatype.org/content/groups/google-with-staging",
+                        "taskDependency")
+            dropwizardCommand("server", "config-name")
         }
         dsl.delegate = app
         dsl()
-        GroovyTestCase.assertEquals(app.cmd(testProject()),
+        assertEquals(app.cmd(testProject()),
                                     "test-zzz/bin/appName server test-zzz/conf/config-name")
+    }
+
+
+    @Test
+    void "dsl generating proper command for Dropwizard application with default config name"() {
+        def app = new App()
+        def dsl = {
+            mavenSource("https://oss.sonatype.org/content/groups/google-with-staging",
+                        "taskDependency")
+            dropwizardCommand("server")
+        }
+        dsl.delegate = app
+        dsl()
+        assertEquals(app.cmd(testProject()),
+                                    "test-zzz/bin/appName server test-zzz/conf/test_a.yaml")
+    }
+
+    @Test
+    void "dsl generating proper command for Dropwizard based command with classpath config"() {
+        def app = new App()
+        def dsl = {
+            mavenSource("https://oss.sonatype.org/content/groups/google-with-staging",
+                        "taskDependency")
+            dropwizardCommandClasspathConfig("servers")
+        }
+        dsl.delegate = app
+        dsl()
+        assertEquals(app.cmd(
+                testProject()), "test-zzz/bin/appName servers classpath:test_a.yaml")
     }
 }
