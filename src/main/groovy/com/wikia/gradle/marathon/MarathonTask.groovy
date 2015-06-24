@@ -8,6 +8,7 @@ import mesosphere.marathon.client.model.v2.Container
 import mesosphere.marathon.client.model.v2.HealthCheck
 import mesosphere.marathon.client.utils.MarathonException
 import org.gradle.api.DefaultTask
+import org.gradle.api.Project
 import org.gradle.api.tasks.TaskAction
 
 class MarathonTask extends DefaultTask {
@@ -37,6 +38,7 @@ class MarathonTask extends DefaultTask {
         }
 
         def appConfig = this.stage.resolve(com.wikia.gradle.marathon.common.App)
+        appConfig.validate()
         if (appConfig.isDocker()) {
             Container container = new Container()
             container.type = "DOCKER"
@@ -51,31 +53,43 @@ class MarathonTask extends DefaultTask {
         return app
     }
 
+    Optional<App> attemptGetExistingApp(Marathon client, String appId){
+        def rv
+        try {
+            rv = Optional.<App>of(client.getApp(appId).getApp())
+        } catch (MarathonException ignore ){
+            rv = Optional.<App>empty()
+        }
+        return rv
+    }
+
+    def mergeAppDescriptions(Optional<App> existingApp, App appDescription, Project project){
+
+        if (existingApp.isPresent()){
+            if (project.hasProperty(PRESERVE_INSTANCE_ALLOCATION) &&
+                project.property(PRESERVE_INSTANCE_ALLOCATION).toString().toBoolean()) {
+                appDescription.instances = existingApp.get().instances;
+            }
+        }
+        return appDescription
+    }
+
     @TaskAction
     def setupApp() {
         this.stage = stage.validate()
         Marathon marathon = MarathonClient.getInstance(this.stage.resolve(MarathonAddress).url)
-        def app = prepareAppDescription()
-        def existingApp
-        try {
-            existingApp = marathon.getApp(app.getId()).getApp()
-        } catch (MarathonException ex ){
-            existingApp = null
-        }
-        if (existingApp != null) {
-            if (project.hasProperty(PRESERVE_INSTANCE_ALLOCATION) &&
-                project.property(PRESERVE_INSTANCE_ALLOCATION).toString().toBoolean()) {
-                app.instances = existingApp.instances;
-            }
+        def appDescription = prepareAppDescription()
 
-            if (project.hasProperty(FORCE_UPDATE)) {
-                marathon.updateApp(app.getId(), app,
-                                   project.property(FORCE_UPDATE).toString().toBoolean())
-            } else {
-                marathon.updateApp(app.getId(), app, false)
-            }
+        def existingApp = attemptGetExistingApp(marathon, appDescription.getId())
+        if (existingApp.isPresent()) {
+            appDescription = mergeAppDescriptions(existingApp, appDescription, project)
+            Boolean force = Optional.ofNullable(project.getProperties().get(FORCE_UPDATE))
+                    .map({x -> x.toString().toBoolean()})
+                    .orElse(false)
+
+            marathon.updateApp(appDescription.getId(), appDescription, force)
         } else {
-            marathon.createApp(app)
+            marathon.createApp(appDescription)
         }
     }
 }

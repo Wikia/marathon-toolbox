@@ -4,7 +4,6 @@ class ConfigResolver {
 
     static <T> Closure<T> dslToParamClosure(Closure<T> closure, int resolveStrategy = Closure.OWNER_FIRST) {
         return { T param ->
-            param = param.clone() as T
             closure.resolveStrategy = resolveStrategy
             closure.delegate = param
             closure()
