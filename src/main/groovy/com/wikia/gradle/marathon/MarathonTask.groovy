@@ -12,7 +12,6 @@ import org.gradle.api.Project
 import org.gradle.api.tasks.TaskAction
 
 class MarathonTask extends DefaultTask {
-
     public static final String FORCE_UPDATE = 'marathon.forceUpdate'
     public static final String PRESERVE_INSTANCE_ALLOCATION = 'marathon.preserveInstanceAllocation'
     Stage stage
@@ -53,17 +52,19 @@ class MarathonTask extends DefaultTask {
         return app
     }
 
-    Optional<App> attemptGetExistingApp(Marathon client, String appId){
-        def rv
+    static Optional<App> attemptGetExistingApp(Marathon client, String appId) {
+        def app
         try {
-            rv = Optional.<App>of(client.getApp(appId).getApp())
-        } catch (MarathonException ignore ){
-            rv = Optional.<App>empty()
+            app = Optional.<App> of(client.getApp(appId).getApp())
+        } catch (MarathonException ex) {
+            getLogger().info("exception encountered while fetching data for app", ex)
+            app = Optional.<App> empty()
         }
-        return rv
+        return app
     }
 
-    def mergeAppDescriptions(Optional<App> existingApp, App appDescription, Project project){
+    static def mergeAppDescriptions(Optional<App> existingApp, App appDescription,
+                                    Project project) {
 
         if (existingApp.isPresent()){
             if (project.hasProperty(PRESERVE_INSTANCE_ALLOCATION) &&
