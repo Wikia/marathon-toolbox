@@ -3,6 +3,7 @@ package com.wikia.gradle.marathon.common
 import com.wikia.groovy.marathon.utils.ArtifactLocator
 import groovy.transform.AutoClone
 import org.gradle.api.Project
+import org.gradle.execution.commandline.TaskConfigurationException
 
 @AutoClone
 class App implements Validating {
@@ -28,7 +29,7 @@ class App implements Validating {
             )
         }
         cmd = { Project project ->
-            "${executablePath(project)} ${arguments(project).join(" ")}"
+            "${executablePath.call(project)} ${arguments.call(project).join(" ")}"
         }
     }
 
@@ -117,7 +118,7 @@ class App implements Validating {
     }
 
     String cmdProvider(Project project) {
-        this.cmd(project)
+        this.cmd.call(project)
     }
 
     String imageProvider(Project project) {

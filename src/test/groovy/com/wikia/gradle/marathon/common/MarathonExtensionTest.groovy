@@ -1,9 +1,9 @@
 package com.wikia.gradle.marathon.common
 
+import org.gradle.api.Project
+import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Test
 
-import static junit.framework.Assert.assertEquals
-import static org.junit.Assert.assertArrayEquals
 import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertNull
 
@@ -124,7 +124,7 @@ class MarathonExtensionTest {
     }
 
     @Test
-    void stagesConfigShouldNotOverrideGlobalConfig() {
+    void stagesConfigShouldNotOverrideGlobalConfigForOtherStages() {
         def stageCreator = new MarathonExtension()
         def dsl = {
             globalDefaults {
