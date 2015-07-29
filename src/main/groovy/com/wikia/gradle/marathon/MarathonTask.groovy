@@ -78,7 +78,7 @@ class MarathonTask extends DefaultTask {
     @TaskAction
     def setupApp() {
         this.stage = stage.validate()
-        Marathon marathon = MarathonClient.getInstance(this.stage.resolve(MarathonAddress).url)
+        Marathon marathon = MarathonClient.getInstance(this.stage.resolve(MarathonAddress).getUrl())
         def appDescription = prepareAppDescription()
 
         def existingApp = attemptGetExistingApp(marathon, appDescription.getId())

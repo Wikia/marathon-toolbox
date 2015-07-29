@@ -14,7 +14,8 @@ class MarathonExtensionTest {
         def stageCreator = new MarathonExtension()
         stageCreator.globalDefaults {
             marathon {
-                url = "ehlo"
+                prodUrl = "ehlo"
+                devUrl = "olhe"
             }
         }
         stageCreator.awesome_stage {
@@ -56,11 +57,12 @@ class MarathonExtensionTest {
     }
 
     @Test
-    void stagesConfigCanBeInheritedFromBase() {
+    void stagesConfigCanBeInheritedFromBaseUsingDevMarathonAddress() {
         def stageCreator = new MarathonExtension()
         stageCreator.globalDefaults {
             marathon {
-                url = "A"
+                prodUrl = "A"
+                devUrl = "V"
             }
         }
 
@@ -70,6 +72,29 @@ class MarathonExtensionTest {
 
         def stage = stageCreator.getStage("x")
         stage.marathon {
+        }
+
+        assertNull(rawStage.resolve(MarathonAddress).url)
+        assertEquals("x", stage.name)
+        assertEquals("V", stage.resolve(MarathonAddress).url)
+    }
+    @Test
+    void stagesConfigCanBeInheritedFromBaseUsingProdMarathonAddress() {
+        def stageCreator = new MarathonExtension()
+        stageCreator.globalDefaults {
+            marathon {
+                prodUrl = "A"
+                devUrl = "V"
+            }
+        }
+
+        Stage rawStage = stageCreator.anyRandomStage {
+            name = "x"
+        }
+
+        def stage = stageCreator.getStage("x")
+        stage.marathon {
+            useProd = true
         }
 
         assertNull(rawStage.resolve(MarathonAddress).url)
