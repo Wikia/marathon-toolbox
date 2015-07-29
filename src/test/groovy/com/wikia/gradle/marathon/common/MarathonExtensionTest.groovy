@@ -57,7 +57,7 @@ class MarathonExtensionTest {
     }
 
     @Test
-    void stagesConfigCanBeInheritedFromBaseUsingDevMarathonAddress() {
+    void "Stages Config Can Be Inherited From Base Using Dev Marathon Address"() {
         def stageCreator = new MarathonExtension()
         stageCreator.globalDefaults {
             marathon {
@@ -79,7 +79,7 @@ class MarathonExtensionTest {
         assertEquals("V", stage.resolve(MarathonAddress).url)
     }
     @Test
-    void stagesConfigCanBeInheritedFromBaseUsingProdMarathonAddress() {
+    void "Stages Config Can Be Inherited From Base Using Prod Marathon Address"() {
         def stageCreator = new MarathonExtension()
         stageCreator.globalDefaults {
             marathon {
