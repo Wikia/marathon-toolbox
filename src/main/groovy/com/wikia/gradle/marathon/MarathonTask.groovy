@@ -52,7 +52,7 @@ class MarathonTask extends DefaultTask {
         return app
     }
 
-    static Optional<App> attemptGetExistingApp(Marathon client, String appId) {
+    def Optional<App> attemptGetExistingApp(Marathon client, String appId) {
         def app
         try {
             app = Optional.<App> of(client.getApp(appId).getApp())
