@@ -7,9 +7,11 @@ import mesosphere.marathon.client.model.v2.App
 import mesosphere.marathon.client.model.v2.Container
 import mesosphere.marathon.client.model.v2.HealthCheck
 import mesosphere.marathon.client.utils.MarathonException
+import org.apache.commons.lang.exception.ExceptionUtils
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.TaskExecutionException
 
 class MarathonTask extends DefaultTask {
     public static final String FORCE_UPDATE = 'marathon.forceUpdate'
@@ -88,9 +90,29 @@ class MarathonTask extends DefaultTask {
                     .map({x -> x.toString().toBoolean()})
                     .orElse(false)
 
-            marathon.updateApp(appDescription.getId(), appDescription, force)
+            try {
+                marathon.updateApp(appDescription.getId(), appDescription, force)
+            } catch (Exception e) {
+                handleUpdateException(e)
+            }
         } else {
             marathon.createApp(appDescription)
+        }
+    }
+
+    def handleUpdateException(Exception e) {
+        /**
+         * the root cause of an exception should be a MarathonException, which sadly
+         * does not expose its HTTP status directly
+         */
+        def cause = ExceptionUtils.getRootCause(e);
+
+        switch (cause.getMessage().trim()) {
+            case "Conflict (http status: 409)":
+                def message = "cannot deploy, existing deployment already in progress"
+                throw new RuntimeException(message)
+            default:
+                throw new TaskExecutionException(this, cause)
         }
     }
 }
