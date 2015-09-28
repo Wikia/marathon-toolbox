@@ -19,10 +19,11 @@ public class App {
 	private Map<String, String> env;
 	private String executor;
 	private List<Integer> ports;
+	private UpdateStrategy updateStrategy;
 	private Collection<Task> tasks;
 	private Integer tasksStaged;
 	private Integer tasksRunning;
-    private Collection<HealthCheck> healthChecks;
+	private Collection<HealthCheck> healthChecks;
 
 	public String getId() {
 		return id;
@@ -135,6 +136,14 @@ public class App {
 			this.ports = new ArrayList<Integer>();
 		}
 		this.ports.add(port);
+	}
+
+	public UpdateStrategy getUpdateStrategy() {
+	  return updateStrategy;
+	}
+
+	public void setUpdateStrategy(UpdateStrategy updateStrategy) {
+	  this.updateStrategy = updateStrategy;
 	}
 
 	public Collection<Task> getTasks() {
