@@ -4,7 +4,7 @@ import java.lang.Double;
 
 import mesosphere.marathon.client.utils.ModelUtils;
 
-public class UpdateStrategy {
+public class UpgradeStrategy {
   private Double minimumHealthCapacity;
   private Double maximumOverCapacity;
 

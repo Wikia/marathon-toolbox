@@ -19,7 +19,7 @@ public class App {
 	private Map<String, String> env;
 	private String executor;
 	private List<Integer> ports;
-	private UpdateStrategy updateStrategy;
+	private UpgradeStrategy upgradeStrategy;
 	private Collection<Task> tasks;
 	private Integer tasksStaged;
 	private Integer tasksRunning;
@@ -138,12 +138,12 @@ public class App {
 		this.ports.add(port);
 	}
 
-	public UpdateStrategy getUpdateStrategy() {
-	  return updateStrategy;
+	public UpgradeStrategy getUpgradeStrategy() {
+	  return upgradeStrategy;
 	}
 
-	public void setUpdateStrategy(UpdateStrategy updateStrategy) {
-	  this.updateStrategy = updateStrategy;
+	public void setUpgradeStrategy(UpgradeStrategy upgradeStrategy) {
+	  this.upgradeStrategy = upgradeStrategy;
 	}
 
 	public Collection<Task> getTasks() {
