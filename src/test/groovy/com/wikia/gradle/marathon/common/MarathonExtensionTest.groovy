@@ -1,13 +1,12 @@
 package com.wikia.gradle.marathon.common
 
-import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Test
 
 import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertNull
 
 class MarathonExtensionTest {
+    private static final double DELTA = 1e-15;
 
     @Test
     public void stageIsCreatedUsingNiceDsl() {
@@ -16,6 +15,10 @@ class MarathonExtensionTest {
             marathon {
                 prodUrl = "ehlo"
                 devUrl = "olhe"
+                upgradeStrategy {
+                    minimumHealthCapacity = 0.5
+                    maximumOverCapacity = 0.5
+                }
             }
         }
         stageCreator.awesome_stage {
@@ -34,10 +37,12 @@ class MarathonExtensionTest {
         def stage = stageCreator.getStage("awesome_stage").validate()
 
         assertEquals(stage.name, "awesome_stage")
-        assertEquals(stage.resolve(Resources).cpus, 1, 0.001) // 0.001 tolerance
-        assertEquals(stage.resolve(Resources).mem, 100, 0.001)
+        assertEquals(stage.resolve(Resources).cpus, 1, DELTA)
+        assertEquals(stage.resolve(Resources).mem, 100, DELTA)
         assertEquals(stage.resolve(Environment).dslProvidedEnvironment.get("d")(), "someValue")
         assertEquals(stage.resolve(Environment).dslProvidedEnvironment.get("a")(), "b")
+        assertEquals(stage.resolve(Marathon).resolveUpgradeStrategy().minimumHealthCapacity, 0.5, DELTA)
+        assertEquals(stage.resolve(Marathon).resolveUpgradeStrategy().maximumOverCapacity, 0.5, DELTA)
     }
 
     @Test(expected = RuntimeException.class)
@@ -74,9 +79,9 @@ class MarathonExtensionTest {
         stage.marathon {
         }
 
-        assertNull(rawStage.resolve(MarathonAddress).url)
+        assertNull(rawStage.resolve(Marathon).url)
         assertEquals("x", stage.name)
-        assertEquals("V", stage.resolve(MarathonAddress).url)
+        assertEquals("V", stage.resolve(Marathon).url)
     }
     @Test
     void "Stages Config Can Be Inherited From Base Using Prod Marathon Address"() {
@@ -97,9 +102,9 @@ class MarathonExtensionTest {
             useProd = true
         }
 
-        assertNull(rawStage.resolve(MarathonAddress).url)
+        assertNull(rawStage.resolve(Marathon).url)
         assertEquals("x", stage.name)
-        assertEquals("A", stage.resolve(MarathonAddress).url)
+        assertEquals("A", stage.resolve(Marathon).url)
     }
 
     @Test
@@ -108,7 +113,11 @@ class MarathonExtensionTest {
         def dsl = {
             globalDefaults {
                 marathon {
-                    url = "http://"
+                    prodUrl = "http://"
+                    upgradeStrategy {
+                        minimumHealthCapacity = 1
+                        maximumOverCapacity = 0
+                    }
                 }
                 resources {
                     mem = 100
@@ -142,10 +151,13 @@ class MarathonExtensionTest {
         assertEquals(stage.resolve(Environment).getEnv().get("x"), "1")
         assertEquals(stage.resolve(Environment).getEnv().get("y"), "2")
 
-        assertEquals(stage.resolve(Resources).cpus, 1.2, 0.001)
-        assertEquals(stage.resolve(Resources).mem, 200, 0.001)
+        assertEquals(stage.resolve(Resources).cpus, 1.2, DELTA)
+        assertEquals(stage.resolve(Resources).mem, 200, DELTA)
         assertEquals(stage.resolve(Resources).instances, 10)
         assertEquals(stage.resolve(Resources).ports, [0])
+
+        assertEquals(stage.resolve(Marathon).resolveUpgradeStrategy().minimumHealthCapacity, 1, DELTA)
+        assertEquals(stage.resolve(Marathon).resolveUpgradeStrategy().maximumOverCapacity, 0, DELTA)
     }
 
     @Test
@@ -176,11 +188,11 @@ class MarathonExtensionTest {
         dsl()
         def testing = stageCreator.getStage("testing")
         testing.insertBefore(stageCreator.globalDefaults)
-        assertEquals(2, testing.resolve(Resources).mem, 0.001)
-        assertEquals(10, testing.resolve(Resources).cpus, 0.001)
+        assertEquals(2, testing.resolve(Resources).mem, DELTA)
+        assertEquals(10, testing.resolve(Resources).cpus, DELTA)
 
         def production = stageCreator.getStage("production")
-        assertEquals(1, production.resolve(Resources).cpus, 0.001)
+        assertEquals(1, production.resolve(Resources).cpus, DELTA)
         assertEquals(Arrays.asList(0,0), production.resolve(Resources).ports)
     }
 }
