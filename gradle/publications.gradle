@@ -1,8 +1,8 @@
 apply plugin: 'maven-publish'
 
 bintray {
-    key = bintrayApiKey
-    user = bintrayUser
+    key = project.ext.properties['bintrayApiKey']
+    user = project.ext.properties['bintrayUser']
     publications = ['mavenJava']
     pkg {
         name = 'marathon-client'
