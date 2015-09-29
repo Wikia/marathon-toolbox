@@ -2,7 +2,8 @@ package com.wikia.gradle.marathon.common
 
 class ConfigResolver {
 
-    static <T> Closure<T> dslToParamClosure(Closure<T> closure, int resolveStrategy = Closure.OWNER_FIRST) {
+    static <T> Closure<T> dslToParamClosure(Closure<T> closure,
+                                            int resolveStrategy = Closure.OWNER_FIRST) {
         return { T param ->
             closure.resolveStrategy = resolveStrategy
             closure.delegate = param
@@ -11,10 +12,18 @@ class ConfigResolver {
         }
     }
 
-    static <T> T resolveConfig(Closure<T> closure, Class<T> klass) {
+    static <T> T resolveConfig(Closure<T> closure, Class<T> klass = null) {
         def instance = klass.newInstance()
         if (closure == null) {
             return instance
+        } else {
+            return closure(instance)
+        }
+    }
+
+    static <T> T resolveNullConfig(Closure<T> closure, Class<T> klass) {
+        if (closure == null) {
+            return null
         } else {
             return closure(klass.newInstance())
         }

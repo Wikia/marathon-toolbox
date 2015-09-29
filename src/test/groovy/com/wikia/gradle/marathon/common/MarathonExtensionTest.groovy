@@ -105,6 +105,7 @@ class MarathonExtensionTest {
         assertNull(rawStage.resolve(Marathon).url)
         assertEquals("x", stage.name)
         assertEquals("A", stage.resolve(Marathon).url)
+        assertNull(stage.resolve(Marathon).resolveUpgradeStrategy())
     }
 
     @Test
