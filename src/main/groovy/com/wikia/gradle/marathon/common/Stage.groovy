@@ -23,8 +23,8 @@ class Stage {
     }
 
     def marathon(Closure dsl) {
-        closures.put(MarathonAddress, stackClosures(
-                dslToParamClosure(dsl), closures.get(MarathonAddress)
+        closures.put(Marathon, stackClosures(
+                dslToParamClosure(dsl), closures.get(Marathon)
         ))
     }
 
