@@ -12,7 +12,7 @@ class ConfigResolver {
         }
     }
 
-    static <T> T resolveConfig(Closure<T> closure, Class<T> klass = null) {
+    static <T> T resolveConfig(Closure<T> closure, Class<T> klass) {
         def instance = klass.newInstance()
         if (closure == null) {
             return instance
