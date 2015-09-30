@@ -33,7 +33,7 @@ class Marathon implements Validating {
     }
 
     UpgradeStrategy resolveUpgradeStrategy() {
-        resolveNullConfig(this.rawUpgradeStrategy, UpgradeStrategy)
+        return resolveNullConfig(this.rawUpgradeStrategy, UpgradeStrategy)
     }
 
     def getUrl() {
