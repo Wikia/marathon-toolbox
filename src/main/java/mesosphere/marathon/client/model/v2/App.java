@@ -19,6 +19,7 @@ public class App {
 	private Map<String, String> env;
 	private String executor;
 	private List<Integer> ports;
+	private boolean requirePorts;
 	private UpgradeStrategy upgradeStrategy;
 	private Collection<Task> tasks;
 	private Integer tasksStaged;
@@ -138,7 +139,16 @@ public class App {
 		this.ports.add(port);
 	}
 
-	public UpgradeStrategy getUpgradeStrategy() {
+	public boolean isRequirePorts() {
+		return requirePorts;
+	}
+
+	public void setRequirePorts(boolean requirePorts) {
+		this.requirePorts = requirePorts;
+	}
+
+
+  public UpgradeStrategy getUpgradeStrategy() {
 	  return upgradeStrategy;
 	}
 
