@@ -1,6 +1,10 @@
 package com.wikia.gradle.marathon.common
+
 import groovy.transform.AutoClone
 import mesosphere.marathon.client.model.v2.UpgradeStrategy
+
+import static com.wikia.gradle.marathon.common.ConfigResolver.dslToParamClosure
+import static com.wikia.gradle.marathon.common.ConfigResolver.resolveNullConfig
 
 @AutoClone
 class Marathon implements Validating {
@@ -8,7 +12,7 @@ class Marathon implements Validating {
     String prodUrl
     String devUrl
     Boolean useProd
-    Closure upgradeStrategy
+    Closure rawUpgradeStrategy
 
     def validate() {
         if (this.properties.get("prodUrl") == null) {
@@ -21,14 +25,15 @@ class Marathon implements Validating {
     }
 
     def upgradeStrategy(Closure upgradeStrategy) {
-        this.upgradeStrategy = upgradeStrategy
+        setUpgradeStrategy(upgradeStrategy)
     }
 
-    def resolveUpgradeStrategy() {
-        UpgradeStrategy realUpgradeStrategy = new UpgradeStrategy()
-        this.upgradeStrategy.delegate = realUpgradeStrategy
-        this.upgradeStrategy.run()
-        return realUpgradeStrategy
+    def setUpgradeStrategy(Closure upgradeStrategy) {
+        this.rawUpgradeStrategy = dslToParamClosure(upgradeStrategy)
+    }
+
+    UpgradeStrategy resolveUpgradeStrategy() {
+        return resolveNullConfig(this.rawUpgradeStrategy, UpgradeStrategy)
     }
 
     def getUrl() {
