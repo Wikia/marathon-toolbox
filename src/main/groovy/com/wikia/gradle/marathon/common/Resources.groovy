@@ -9,6 +9,7 @@ class Resources implements Validating {
     Double mem
     Integer instances
     List<Integer> ports
+    boolean requirePorts
 
     def useRandomPorts(Integer num) {
         ports = new ArrayList<>()
