@@ -36,6 +36,7 @@ class MarathonTask extends DefaultTask {
         app.setEnv(this.stage.resolve(Environment).getEnv())
         app.setId(this.getDeploymentId())
         app.setRequirePorts(res.requirePorts)
+        app.setLabels(marathon.resolveLabels().labels)
 
         List<HealthCheck> healthChecks = this.stage.resolve(Healthchecks).healthchecksProvider()
 
