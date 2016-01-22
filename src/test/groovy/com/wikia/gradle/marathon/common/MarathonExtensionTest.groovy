@@ -19,6 +19,11 @@ class MarathonExtensionTest {
                     minimumHealthCapacity = 0.5
                     maximumOverCapacity = 0.5
                 }
+                labels = {
+                    foo = "bar"
+                    one = "two"
+                    consul = "true"
+                }
             }
         }
         stageCreator.awesome_stage {
@@ -43,6 +48,9 @@ class MarathonExtensionTest {
         assertEquals(stage.resolve(Environment).dslProvidedEnvironment.get("a")(), "b")
         assertEquals(stage.resolve(Marathon).resolveUpgradeStrategy().minimumHealthCapacity, 0.5, DELTA)
         assertEquals(stage.resolve(Marathon).resolveUpgradeStrategy().maximumOverCapacity, 0.5, DELTA)
+        assertEquals(stage.resolve(Marathon).resolveLabels().labels.get("foo"), "bar")
+        assertEquals(stage.resolve(Marathon).resolveLabels().labels.get("one"), "two")
+        assertEquals(stage.resolve(Marathon).resolveLabels().labels.get("consul"), "true")
     }
 
     @Test(expected = RuntimeException.class)

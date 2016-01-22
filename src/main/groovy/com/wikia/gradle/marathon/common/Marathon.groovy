@@ -13,6 +13,7 @@ class Marathon implements Validating {
     String devUrl
     Boolean useProd
     Closure rawUpgradeStrategy
+    Closure rawLabels
 
     def validate() {
         if (this.properties.get("prodUrl") == null) {
@@ -34,6 +35,18 @@ class Marathon implements Validating {
 
     UpgradeStrategy resolveUpgradeStrategy() {
         return resolveNullConfig(this.rawUpgradeStrategy, UpgradeStrategy)
+    }
+
+    def labels(Closure labels) {
+        setLabels(labels)
+    }
+
+    def setLabels(Closure labels) {
+        this.rawLabels = dslToParamClosure(labels)
+    }
+
+    Labels resolveLabels() {
+        return resolveNullConfig(this.rawLabels, Labels)
     }
 
     def getUrl() {
