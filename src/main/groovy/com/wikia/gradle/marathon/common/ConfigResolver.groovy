@@ -23,7 +23,7 @@ class ConfigResolver {
 
     static <T> T resolveNullConfig(Closure<T> closure, Class<T> klass) {
         if (closure == null) {
-            return null
+            return []
         } else {
             return closure(klass.newInstance())
         }
