@@ -13,6 +13,7 @@ public class App {
 	private Integer instances;
 	private Double cpus;
 	private Double mem;
+	private Double backoffFactor;
 	private Collection<String> uris;
 	private List<List<String>> constraints;
 	private Container container;
@@ -65,6 +66,14 @@ public class App {
 
 	public void setMem(Double mem) {
 		this.mem = mem;
+	}
+
+	public Double getBackoffFactor() {
+	  return backoffFactor;
+	}
+
+	public void setBackoffFactor(Double backoffFactor) {
+          this.backoffFactor = backoffFactor;
 	}
 
 	public Collection<String> getUris() {
