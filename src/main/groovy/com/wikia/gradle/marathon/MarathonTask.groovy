@@ -37,6 +37,9 @@ class MarathonTask extends DefaultTask {
         app.setId(this.getDeploymentId())
         app.setRequirePorts(res.requirePorts)
         app.setLabels(marathon.resolveLabels().labels)
+        app.setBackoffFactor(marathon.backoffFactor)
+        app.setBackoffSeconds(marathon.backoffSeconds)
+        app.setMaxLaunchDelaySeconds(marathon.maxLaunchDelaySeconds)
 
         List<HealthCheck> healthChecks = this.stage.resolve(Healthchecks).healthchecksProvider()
 

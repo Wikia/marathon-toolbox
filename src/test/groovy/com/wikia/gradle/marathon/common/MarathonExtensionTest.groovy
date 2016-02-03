@@ -15,6 +15,9 @@ class MarathonExtensionTest {
             marathon {
                 prodUrl = "ehlo"
                 devUrl = "olhe"
+                backoffFactor = 1.1
+                backoffSeconds = 1
+                maxLaunchDelaySeconds = 10
                 upgradeStrategy {
                     minimumHealthCapacity = 0.5
                     maximumOverCapacity = 0.5
@@ -51,6 +54,9 @@ class MarathonExtensionTest {
         assertEquals(stage.resolve(Marathon).resolveLabels().labels.get("foo"), "bar")
         assertEquals(stage.resolve(Marathon).resolveLabels().labels.get("one"), "two")
         assertEquals(stage.resolve(Marathon).resolveLabels().labels.get("consul"), "true")
+        assertEquals(stage.resolve(Marathon).backoffFactor, 1.1, DELTA)
+        assertEquals(stage.resolve(Marathon).backoffSeconds, 1)
+        assertEquals(stage.resolve(Marathon).maxLaunchDelaySeconds, 10)
     }
 
     @Test(expected = RuntimeException.class)
