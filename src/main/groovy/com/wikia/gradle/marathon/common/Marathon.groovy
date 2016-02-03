@@ -14,6 +14,9 @@ class Marathon implements Validating {
     Boolean useProd
     Closure rawUpgradeStrategy
     Closure rawLabels
+    Double backoffFactor
+    Integer backoffSeconds
+    Integer maxLaunchDelaySeconds
 
     def validate() {
         if (this.properties.get("prodUrl") == null) {
