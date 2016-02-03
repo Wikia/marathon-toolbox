@@ -14,6 +14,8 @@ public class App {
 	private Double cpus;
 	private Double mem;
 	private Double backoffFactor;
+	private Integer backoffSeconds;
+	private Integer maxLaunchDelaySeconds;
 	private Collection<String> uris;
 	private List<List<String>> constraints;
 	private Container container;
@@ -74,6 +76,22 @@ public class App {
 
 	public void setBackoffFactor(Double backoffFactor) {
           this.backoffFactor = backoffFactor;
+	}
+
+	public Integer getBackoffSeconds() {
+		return backoffSeconds;
+	}
+
+	public void setBackoffSeconds(Integer backoffSeconds) {
+		this.backoffSeconds = backoffSeconds;
+	}
+
+	public Integer getMaxLaunchDelaySeconds() {
+		return maxLaunchDelaySeconds;
+	}
+
+	public void setMaxLaunchDelaySeconds(Integer maxLaunchDelaySeconds) {
+		this.maxLaunchDelaySeconds = maxLaunchDelaySeconds;
 	}
 
 	public Collection<String> getUris() {
