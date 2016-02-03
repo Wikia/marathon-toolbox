@@ -39,5 +39,19 @@ publishing {
             artifact javadocJar
         }
     }
+    repositories {
+        maven {
+            credentials {
+                username archivaUsername
+                password archivaPassword
+            }
+            if (version.endsWith('-SNAPSHOT')) {
+                url "${archivaUrl}/repository/snapshots/"
+            } else {
+                url "${archivaUrl}/repository/internal/"
+            }
+        }
+    }
+
 }
 
