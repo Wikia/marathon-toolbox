@@ -28,6 +28,8 @@ public class App {
 	private Collection<Task> tasks;
 	private Integer tasksStaged;
 	private Integer tasksRunning;
+	private Integer tasksHealthy;
+	private Integer tasksUnhealthy;
 	private Collection<HealthCheck> healthChecks;
 
 	public String getId() {
@@ -71,11 +73,11 @@ public class App {
 	}
 
 	public Double getBackoffFactor() {
-	  return backoffFactor;
+		return backoffFactor;
 	}
 
 	public void setBackoffFactor(Double backoffFactor) {
-          this.backoffFactor = backoffFactor;
+		this.backoffFactor = backoffFactor;
 	}
 
 	public Integer getBackoffSeconds() {
@@ -184,12 +186,12 @@ public class App {
 	}
 
 
-  public UpgradeStrategy getUpgradeStrategy() {
-	  return upgradeStrategy;
+	public UpgradeStrategy getUpgradeStrategy() {
+		return upgradeStrategy;
 	}
 
 	public void setUpgradeStrategy(UpgradeStrategy upgradeStrategy) {
-	  this.upgradeStrategy = upgradeStrategy;
+	this.upgradeStrategy = upgradeStrategy;
 	}
 
 	public Collection<Task> getTasks() {
@@ -216,17 +218,32 @@ public class App {
 		this.tasksRunning = tasksRunning;
 	}
 
-    public Collection<HealthCheck> getHealthChecks() {
-        return healthChecks;
-    }
+	public Integer getTasksHealthy() {
+		return tasksHealthy;
+	}
 
-    public void setHealthChecks(Collection<HealthCheck> healthChecks) {
-        this.healthChecks = healthChecks;
-    }
+	public void setTasksHealthy(Integer tasksHealthy) {
+		this.tasksHealthy = tasksHealthy;
+	}
+
+	public Integer getTasksUnhealthy() {
+		return tasksUnhealthy;
+	}
+
+	public void setTasksUnhealthy(Integer tasksUnhealthy) {
+		this.tasksUnhealthy = tasksUnhealthy;
+	}
+
+	public Collection<HealthCheck> getHealthChecks() {
+		return healthChecks;
+	}
+
+	public void setHealthChecks(Collection<HealthCheck> healthChecks) {
+		this.healthChecks = healthChecks;
+	}
 
 	@Override
 	public String toString() {
 		return ModelUtils.toString(this);
 	}
-
 }
