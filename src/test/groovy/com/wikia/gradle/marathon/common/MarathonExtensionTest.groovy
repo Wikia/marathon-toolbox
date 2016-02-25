@@ -14,6 +14,7 @@ class MarathonExtensionTest {
         stageCreator.globalDefaults {
             marathon {
                 prodUrl = "ehlo"
+                stagingUrl = "lohe"
                 devUrl = "olhe"
                 backoffFactor = 1.1
                 backoffSeconds = 1
@@ -81,6 +82,7 @@ class MarathonExtensionTest {
         stageCreator.globalDefaults {
             marathon {
                 prodUrl = "A"
+                stagingUrl = "S"
                 devUrl = "V"
             }
         }
@@ -103,6 +105,7 @@ class MarathonExtensionTest {
         stageCreator.globalDefaults {
             marathon {
                 prodUrl = "A"
+                stagingUrl = "S"
                 devUrl = "V"
             }
         }
