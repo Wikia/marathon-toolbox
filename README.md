@@ -73,6 +73,16 @@ Run the following command from the root of repository, to build the client JAR:
 $ mvn clean install
 ```
 
+It's also possible to build with gradle:
+```
+$ gradle build
+```
+
+## Publishing
+```
+$ gradle publish
+```
+
 ## Bugs
 
 Bugs can be reported using Github issues.
