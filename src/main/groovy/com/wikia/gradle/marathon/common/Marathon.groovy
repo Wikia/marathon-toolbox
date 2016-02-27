@@ -9,9 +9,7 @@ import static com.wikia.gradle.marathon.common.ConfigResolver.resolveNullConfig
 @AutoClone
 class Marathon implements Validating {
 
-    String prodUrl
-    String stagingUrl
-    String devUrl
+    String marathonUrl
     Boolean useProd
     Boolean useStaging
     Closure rawUpgradeStrategy
@@ -21,16 +19,8 @@ class Marathon implements Validating {
     Integer maxLaunchDelaySeconds
 
     def validate() {
-        if (this.properties.get("prodUrl") == null) {
-            throw new RuntimeException("Marathon.prodUrl needs to be set")
-        }
-
-        if (this.properties.get("stagingUrl") == null) {
-            throw new RuntimeException("Marathon.stagingUrl needs to be set")
-        }
-
-        if (this.properties.get("devUrl") == null) {
-            throw new RuntimeException("Marathon.devUrl needs to be set")
+        if (this.properties.get("marathonUrl") == null) {
+            throw new RuntimeException("Marathon.marathonUrl needs to be set")
         }
     }
 
@@ -59,12 +49,6 @@ class Marathon implements Validating {
     }
 
     def getUrl() {
-        if (useProd) {
-            return prodUrl
-        } else if (useStaging) {
-            return stagingUrl
-        } else {
-            return devUrl
-        }
+        return marathonUrl
     }
 }
