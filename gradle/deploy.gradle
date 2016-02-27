@@ -18,13 +18,13 @@ publishing {
     repositories {
         maven {
             credentials {
-                username archivaUsername
-                password archivaPassword
+                username artifactoryUsername
+                password artifactoryPassword
             }
             if (project.version.endsWith('-SNAPSHOT')) {
-                url "${archivaUrl}/repository/snapshots"
+                url "${artifactoryUrl}/artifactory/libs-snapshot-local"
             } else {
-                url "${archivaUrl}/repository/internal"
+                url "${artifactoryUrl}/artifactory/plugins-source"
             }
         }
     }
