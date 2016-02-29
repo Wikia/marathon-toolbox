@@ -13,9 +13,7 @@ class MarathonExtensionTest {
         def stageCreator = new MarathonExtension()
         stageCreator.globalDefaults {
             marathon {
-                prodUrl = "ehlo"
-                stagingUrl = "lohe"
-                devUrl = "olhe"
+                marathonUrl = "ehlo"
                 backoffFactor = 1.1
                 backoffSeconds = 1
                 maxLaunchDelaySeconds = 10
@@ -77,13 +75,11 @@ class MarathonExtensionTest {
     }
 
     @Test
-    void "Stages Config Can Be Inherited From Base Using Dev Marathon Address"() {
+    void "Stages Config Can Be Inherited From Base Using Marathon Address"() {
         def stageCreator = new MarathonExtension()
         stageCreator.globalDefaults {
             marathon {
-                prodUrl = "A"
-                stagingUrl = "S"
-                devUrl = "V"
+                marathonUrl = "U"
             }
         }
 
@@ -97,32 +93,7 @@ class MarathonExtensionTest {
 
         assertNull(rawStage.resolve(Marathon).url)
         assertEquals("x", stage.name)
-        assertEquals("V", stage.resolve(Marathon).url)
-    }
-    @Test
-    void "Stages Config Can Be Inherited From Base Using Prod Marathon Address"() {
-        def stageCreator = new MarathonExtension()
-        stageCreator.globalDefaults {
-            marathon {
-                prodUrl = "A"
-                stagingUrl = "S"
-                devUrl = "V"
-            }
-        }
-
-        Stage rawStage = stageCreator.anyRandomStage {
-            name = "x"
-        }
-
-        def stage = stageCreator.getStage("x")
-        stage.marathon {
-            useProd = true
-        }
-
-        assertNull(rawStage.resolve(Marathon).url)
-        assertEquals("x", stage.name)
-        assertEquals("A", stage.resolve(Marathon).url)
-        assertEquals("{}", stage.resolve(Marathon).resolveUpgradeStrategy().toString())
+        assertEquals("U", stage.resolve(Marathon).url)
     }
 
     @Test
@@ -131,7 +102,7 @@ class MarathonExtensionTest {
         def dsl = {
             globalDefaults {
                 marathon {
-                    prodUrl = "http://"
+                    marathonUrl = "http://"
                     upgradeStrategy {
                         minimumHealthCapacity = 1
                         maximumOverCapacity = 0

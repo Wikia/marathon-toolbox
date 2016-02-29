@@ -10,8 +10,6 @@ import static com.wikia.gradle.marathon.common.ConfigResolver.resolveNullConfig
 class Marathon implements Validating {
 
     String marathonUrl
-    Boolean useProd
-    Boolean useStaging
     Closure rawUpgradeStrategy
     Closure rawLabels
     Double backoffFactor
