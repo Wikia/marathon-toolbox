@@ -1,3 +1,20 @@
+# Usage #
+
+## Buidling ##
+```bash
+gradle build
+```
+
+## Testing ##
+```bash
+gradle test
+```
+
+## Publishing ##
+```
+gradle publish
+```
+
 ### Project properties that change behaviour
 
 - marathon.forceUpdate - makes app update override any deployments currently running
