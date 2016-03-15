@@ -1,4 +1,6 @@
 package com.wikia.gradle.marathon
+
+import com.wikia.gradle.marathon.common.Constraints
 import com.wikia.gradle.marathon.common.Environment
 import com.wikia.gradle.marathon.common.Healthchecks
 import com.wikia.gradle.marathon.common.Resources
@@ -45,6 +47,12 @@ class MarathonTask extends DefaultTask {
 
         if (healthChecks.size() > 0) {
             app.setHealthChecks(healthChecks)
+        }
+
+        List<List<String>> constraints = this.stage.resolve(Constraints).getConstraints()
+
+        if (constraints.size() > 0) {
+            app.setConstraints(constraints)
         }
 
         def appConfig = this.stage.resolve(com.wikia.gradle.marathon.common.App)
