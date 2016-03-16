@@ -1,4 +1,6 @@
 package com.wikia.gradle.marathon
+
+import com.wikia.gradle.marathon.common.Constraints
 import com.wikia.gradle.marathon.common.Environment
 import com.wikia.gradle.marathon.common.Healthchecks
 import com.wikia.gradle.marathon.common.Resources
@@ -42,10 +44,10 @@ class MarathonTask extends DefaultTask {
         app.setMaxLaunchDelaySeconds(marathon.maxLaunchDelaySeconds)
 
         List<HealthCheck> healthChecks = this.stage.resolve(Healthchecks).healthchecksProvider()
+        app.setHealthChecks(healthChecks)
 
-        if (healthChecks.size() > 0) {
-            app.setHealthChecks(healthChecks)
-        }
+        List<List<String>> constraints = this.stage.resolve(Constraints).getConstraints()
+        app.setConstraints(constraints)
 
         def appConfig = this.stage.resolve(com.wikia.gradle.marathon.common.App)
         appConfig.validate()

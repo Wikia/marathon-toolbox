@@ -12,6 +12,7 @@ class Marathon implements Validating {
     String marathonUrl
     Closure rawUpgradeStrategy
     Closure rawLabels
+    Closure rawConstraints
     Double backoffFactor
     Integer backoffSeconds
     Integer maxLaunchDelaySeconds
@@ -44,6 +45,18 @@ class Marathon implements Validating {
 
     Labels resolveLabels() {
         return resolveNullConfig(this.rawLabels, Labels)
+    }
+
+    def constraints(Closure constraints) {
+        setConstraints(constraints)
+    }
+
+    def setConstraints(Closure constraints) {
+        this.rawConstraints = dslToParamClosure(constraints)
+    }
+
+    Constraints resolveConstraints() {
+        return resolveNullConfig(this.rawConstraints, Constraints)
     }
 
     def getUrl() {

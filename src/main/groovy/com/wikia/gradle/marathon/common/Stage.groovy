@@ -40,6 +40,12 @@ class Stage {
         ))
     }
 
+    def constraints(Closure dsl) {
+        closures.put(Constraints, stackClosures(
+                dslToParamClosure(dsl), closures.get(Constraints)
+        ))
+    }
+
     def validate() {
         if (this.name == null) {
             throw new RuntimeException("Stage.name needs to be set")
