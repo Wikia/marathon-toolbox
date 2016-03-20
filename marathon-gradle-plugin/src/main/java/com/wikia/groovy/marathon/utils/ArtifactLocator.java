@@ -3,21 +3,20 @@ package com.wikia.groovy.marathon.utils;
 import com.google.common.io.Files;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.apache.maven.artifact.repository.metadata.Snapshot;
 import org.apache.maven.artifact.repository.metadata.io.DefaultMetadataReader;
 import org.apache.maven.artifact.repository.metadata.io.MetadataReader;
-import org.eclipse.aether.DefaultRepositorySystemSession;
-import org.eclipse.aether.RepositorySystem;
-import org.eclipse.aether.artifact.Artifact;
-import org.eclipse.aether.artifact.DefaultArtifact;
-import org.eclipse.aether.metadata.DefaultMetadata;
-import org.eclipse.aether.repository.LocalRepository;
-import org.eclipse.aether.repository.RemoteRepository;
-import org.eclipse.aether.resolution.MetadataRequest;
-import org.eclipse.aether.resolution.MetadataResult;
+import org.sonatype.aether.RepositorySystem;
+import org.sonatype.aether.artifact.Artifact;
+import org.sonatype.aether.repository.LocalRepository;
+import org.sonatype.aether.repository.RemoteRepository;
+import org.sonatype.aether.resolution.MetadataRequest;
+import org.sonatype.aether.resolution.MetadataResult;
+import org.sonatype.aether.util.DefaultRepositorySystemSession;
+import org.sonatype.aether.util.artifact.DefaultArtifact;
+import org.sonatype.aether.util.metadata.DefaultMetadata;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -48,12 +47,9 @@ public class ArtifactLocator {
     this.session = new DefaultRepositorySystemSession();
 
     session.setLocalRepositoryManager(
-        system.newLocalRepositoryManager(session, new LocalRepository(Files.createTempDir())));
+        system.newLocalRepositoryManager(new LocalRepository(Files.createTempDir())));
 
-    this.remoteRepository = new RemoteRepository.Builder(REPOSITORY_ID, CONTEXT,
-                                                         repositoryUrl)
-        .build();
-
+    this.remoteRepository = new RemoteRepository(REPOSITORY_ID, CONTEXT, repositoryUrl);
   }
 
   public String getUrl(String groupId, String artifactId, String extenstion, String version) {
@@ -69,23 +65,27 @@ public class ArtifactLocator {
   }
 
   public Metadata fetchMetadata(Artifact artifact) {
-    org.eclipse.aether.metadata.Metadata metadata =
+    DefaultMetadata metadata =
         new DefaultMetadata(artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(),
                             MAVEN_METADATA_XML,
-                            org.eclipse.aether.metadata.Metadata.Nature.SNAPSHOT);
+                            org.sonatype.aether.metadata.Metadata.Nature.SNAPSHOT);
 
     MetadataRequest metadataRequest = new MetadataRequest(metadata);
     metadataRequest.setFavorLocalRepository(false);
     session.setUpdatePolicy(UPDATE_POLICY);
     metadataRequest.setRepository(this.remoteRepository);
 
-    List<MetadataResult>
-        res =
+    List<MetadataResult> res =
         this.system.resolveMetadata(this.session, Arrays.asList(metadataRequest));
 
-    if (res.size() == 0 || res.get(0).getMetadata() == null) {
+    if (res.size() == 0) {
       throw new RuntimeException("Failed fetching artifact metadata from repository");
     }
+    Exception ex = res.get(0).getException();
+    if (ex != null) {
+      throw new RuntimeException(ex);
+    }
+
     Map<String, ?> options = Collections.singletonMap(MetadataReader.IS_STRICT, Boolean.FALSE);
 
     Metadata mavenMetadata;

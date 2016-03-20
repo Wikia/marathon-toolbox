@@ -2,8 +2,6 @@ package com.wikia.groovy.marathon.utils;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
-import com.google.inject.name.Names;
-
 import org.apache.maven.model.building.DefaultModelBuilder;
 import org.apache.maven.model.building.ModelBuilder;
 import org.apache.maven.repository.internal.DefaultArtifactDescriptorReader;
@@ -11,77 +9,112 @@ import org.apache.maven.repository.internal.DefaultVersionRangeResolver;
 import org.apache.maven.repository.internal.DefaultVersionResolver;
 import org.apache.maven.repository.internal.SnapshotMetadataGeneratorFactory;
 import org.apache.maven.repository.internal.VersionsMetadataGeneratorFactory;
-import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory;
-import org.eclipse.aether.impl.ArtifactDescriptorReader;
-import org.eclipse.aether.impl.MetadataGeneratorFactory;
-import org.eclipse.aether.impl.VersionRangeResolver;
-import org.eclipse.aether.impl.VersionResolver;
-import org.eclipse.aether.impl.guice.AetherModule;
-import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
-import org.eclipse.aether.spi.connector.transport.TransporterFactory;
-import org.eclipse.aether.transport.file.FileTransporterFactory;
-import org.eclipse.aether.transport.http.HttpTransporterFactory;
+import org.slf4j.LoggerFactory;
+import org.sonatype.aether.RepositorySystem;
+import org.sonatype.aether.connector.async.AsyncRepositoryConnectorFactory;
+import org.sonatype.aether.impl.ArtifactDescriptorReader;
+import org.sonatype.aether.impl.ArtifactResolver;
+import org.sonatype.aether.impl.DependencyCollector;
+import org.sonatype.aether.impl.Deployer;
+import org.sonatype.aether.impl.Installer;
+import org.sonatype.aether.impl.LocalRepositoryProvider;
+import org.sonatype.aether.impl.MetadataGeneratorFactory;
+import org.sonatype.aether.impl.MetadataResolver;
+import org.sonatype.aether.impl.RemoteRepositoryManager;
+import org.sonatype.aether.impl.RepositoryEventDispatcher;
+import org.sonatype.aether.impl.SyncContextFactory;
+import org.sonatype.aether.impl.UpdateCheckManager;
+import org.sonatype.aether.impl.VersionRangeResolver;
+import org.sonatype.aether.impl.VersionResolver;
+import org.sonatype.aether.impl.internal.DefaultArtifactResolver;
+import org.sonatype.aether.impl.internal.DefaultFileProcessor;
+import org.sonatype.aether.impl.internal.DefaultMetadataResolver;
+import org.sonatype.aether.impl.internal.DefaultRepositorySystem;
+import org.sonatype.aether.impl.internal.Slf4jLogger;
+import org.sonatype.aether.spi.connector.RepositoryConnectorFactory;
+import org.sonatype.aether.spi.io.FileProcessor;
+import org.sonatype.aether.spi.log.Logger;
 
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.inject.Named;
-import javax.inject.Singleton;
+import java.util.List;
 
 public class MarathonAetherModule extends AbstractModule {
 
   @Override
   protected void configure() {
+//    install(new AetherModule());
     install(new AetherModule());
+
     bind(ArtifactDescriptorReader.class)
-        .to(DefaultArtifactDescriptorReader.class).in(Singleton.class);
+        .to(DefaultArtifactDescriptorReader.class);
     bind(VersionResolver.class)
-        .to(DefaultVersionResolver.class).in(Singleton.class);
+        .to(DefaultVersionResolver.class);
     bind(VersionRangeResolver.class)
-        .to(DefaultVersionRangeResolver.class).in(Singleton.class);
-    bind(MetadataGeneratorFactory.class).annotatedWith(Names.named("snapshot"))
-        .to(SnapshotMetadataGeneratorFactory.class).in(Singleton.class);
-    bind(MetadataGeneratorFactory.class).annotatedWith(Names.named("versions"))
-        .to(VersionsMetadataGeneratorFactory.class).in(Singleton.class);
+        .to(DefaultVersionRangeResolver.class);
     bind(ModelBuilder.class)
         .toInstance(new DefaultModelBuilder());
-    bind(RepositoryConnectorFactory.class).annotatedWith(Names.named("basic"))
-        .to(BasicRepositoryConnectorFactory.class);
-    bind(TransporterFactory.class).annotatedWith(Names.named("file"))
-        .to(FileTransporterFactory.class);
-    bind(TransporterFactory.class).annotatedWith(Names.named("http"))
-        .to(HttpTransporterFactory.class);
+    bind(FileProcessor.class).to(DefaultFileProcessor.class);
   }
 
   @Provides
-  @Singleton
-  Set<MetadataGeneratorFactory> provideMetadataGeneratorFactories(
-      @Named("snapshot") MetadataGeneratorFactory snapshot,
-      @Named("versions") MetadataGeneratorFactory versions) {
-    Set<MetadataGeneratorFactory> factories = new HashSet<MetadataGeneratorFactory>();
-    factories.add(snapshot);
-    factories.add(versions);
-
-    return Collections.unmodifiableSet(factories);
+  Logger providesLogger() {
+    return new Slf4jLogger(LoggerFactory.getLogger("maven"));
   }
 
   @Provides
-  @Singleton
-  Set<RepositoryConnectorFactory> provideRepositoryConnectorFactories(
-      @Named("basic") RepositoryConnectorFactory basic) {
-    Set<RepositoryConnectorFactory> factories = new HashSet<>();
-    factories.add(basic);
-    return Collections.unmodifiableSet(factories);
+  List<MetadataGeneratorFactory> provideMetadataGeneratorFactories(
+      SnapshotMetadataGeneratorFactory snapshot, VersionsMetadataGeneratorFactory versions) {
+    return Arrays.asList(snapshot, versions);
   }
 
   @Provides
-  @Singleton
-  Set<TransporterFactory> provideTransporterFactories(@Named("file") TransporterFactory file,
-                                                      @Named("http") TransporterFactory http) {
-    Set<TransporterFactory> factories = new HashSet<>();
-    factories.add(file);
-    factories.add(http);
-    return Collections.unmodifiableSet(factories);
+  RepositorySystem providesRepositorySystem(Logger logger, VersionResolver versionResolver,
+                                            VersionRangeResolver versionRangeResolver,
+                                            ArtifactResolver artifactResolver,
+                                            MetadataResolver metadataResolver,
+                                            ArtifactDescriptorReader artifactDescriptorReader,
+                                            DependencyCollector dependencyCollector,
+                                            Installer installer, Deployer deployer,
+                                            LocalRepositoryProvider localRepositoryProvider,
+                                            SyncContextFactory syncContextFactory) {
+    return new DefaultRepositorySystem(logger, versionResolver, versionRangeResolver,
+                                       artifactResolver, metadataResolver, artifactDescriptorReader,
+                                       dependencyCollector, installer, deployer,
+                                       localRepositoryProvider, syncContextFactory);
+  }
+
+  @Provides
+  ArtifactResolver providesArtifactResolver(Logger logger, FileProcessor fileProcessor,
+                                            RepositoryEventDispatcher repositoryEventDispatcher,
+                                            VersionResolver versionResolver,
+                                            UpdateCheckManager updateCheckManager,
+                                            RemoteRepositoryManager remoteRepositoryManager,
+                                            SyncContextFactory syncContextFactory) {
+    return new DefaultArtifactResolver(
+        logger, fileProcessor, repositoryEventDispatcher, versionResolver, updateCheckManager,
+        remoteRepositoryManager, syncContextFactory);
+  }
+
+  @Provides
+  MetadataResolver providesMetadataResolver(Logger logger,
+                                            RepositoryEventDispatcher repositoryEventDispatcher,
+                                            UpdateCheckManager updateCheckManager,
+                                            RemoteRepositoryManager remoteRepositoryManager,
+                                            SyncContextFactory syncContextFactory) {
+    return new DefaultMetadataResolver(logger, repositoryEventDispatcher, updateCheckManager,
+                                       remoteRepositoryManager, syncContextFactory);
+  }
+
+  @Provides
+  List<RepositoryConnectorFactory> provideRepositoryConnectorFactories(
+      RepositoryConnectorFactory factory) {
+    return Collections.singletonList(factory);
+  }
+
+  @Provides
+  RepositoryConnectorFactory provideRepositoryConnectorFactory(FileProcessor fileProcessor,
+                                                               Logger logger) {
+    return new AsyncRepositoryConnectorFactory(logger, fileProcessor);
   }
 }
