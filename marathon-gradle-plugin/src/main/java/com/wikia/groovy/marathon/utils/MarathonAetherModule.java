@@ -36,40 +36,44 @@ public class MarathonAetherModule extends AbstractModule {
   protected void configure() {
     install(new BasicAetherModule());
     try {
-      bind(RepositorySystem.class).toConstructor(DefaultRepositorySystem.class.getConstructor(
-          Logger.class,
-          VersionResolver.class,
-          VersionRangeResolver.class,
-          ArtifactResolver.class,
-          MetadataResolver.class,
-          ArtifactDescriptorReader.class,
-          DependencyCollector.class,
-          Installer.class,
-          Deployer.class,
-          LocalRepositoryProvider.class,
-          SyncContextFactory.class
-      ));
-      bind(ArtifactResolver.class)
-          .toConstructor(DefaultArtifactResolver.class.getConstructor(
-              Logger.class,
-              FileProcessor.class,
-              RepositoryEventDispatcher.class,
-              VersionResolver.class,
-              UpdateCheckManager.class,
-              RemoteRepositoryManager.class,
-              SyncContextFactory.class
-          ));
-      bind(MetadataResolver.class)
-          .toConstructor(DefaultMetadataResolver.class.getConstructor(
-              Logger.class,
-              RepositoryEventDispatcher.class,
-              UpdateCheckManager.class,
-              RemoteRepositoryManager.class,
-              SyncContextFactory.class
-          ));
+      exceptionalConfigure();
     } catch (NoSuchMethodException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  private void exceptionalConfigure() throws NoSuchMethodException {
+    bind(RepositorySystem.class).toConstructor(DefaultRepositorySystem.class.getConstructor(
+        Logger.class,
+        VersionResolver.class,
+        VersionRangeResolver.class,
+        ArtifactResolver.class,
+        MetadataResolver.class,
+        ArtifactDescriptorReader.class,
+        DependencyCollector.class,
+        Installer.class,
+        Deployer.class,
+        LocalRepositoryProvider.class,
+        SyncContextFactory.class
+    ));
+    bind(ArtifactResolver.class)
+        .toConstructor(DefaultArtifactResolver.class.getConstructor(
+            Logger.class,
+            FileProcessor.class,
+            RepositoryEventDispatcher.class,
+            VersionResolver.class,
+            UpdateCheckManager.class,
+            RemoteRepositoryManager.class,
+            SyncContextFactory.class
+        ));
+    bind(MetadataResolver.class)
+        .toConstructor(DefaultMetadataResolver.class.getConstructor(
+            Logger.class,
+            RepositoryEventDispatcher.class,
+            UpdateCheckManager.class,
+            RemoteRepositoryManager.class,
+            SyncContextFactory.class
+        ));
   }
 
   @Provides

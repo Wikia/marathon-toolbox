@@ -55,51 +55,55 @@ public class BasicAetherModule extends AbstractModule {
     bind(LocalRepositoryManagerFactory.class).to(SimpleLocalRepositoryManagerFactory.class);
 
     try {
-      bind(RepositoryEventDispatcher.class)
-          .toConstructor(DefaultRepositoryEventDispatcher.class.getConstructor(
-              Logger.class,
-              List.class));
-      bind(UpdateCheckManager.class)
-          .toConstructor(DefaultUpdateCheckManager.class.getConstructor(
-              Logger.class));
-      bind(RemoteRepositoryManager.class)
-          .toConstructor(DefaultRemoteRepositoryManager.class.getConstructor(
-              Logger.class,
-              UpdateCheckManager.class,
-              List.class));
-      bind(DependencyCollector.class)
-          .toConstructor(DefaultDependencyCollector.class.getConstructor(
-              Logger.class,
-              RemoteRepositoryManager.class,
-              ArtifactDescriptorReader.class,
-              VersionRangeResolver.class
-          ));
-      bind(Deployer.class)
-          .toConstructor(DefaultDeployer.class.getConstructor(
-              Logger.class,
-              FileProcessor.class,
-              RepositoryEventDispatcher.class,
-              RemoteRepositoryManager.class,
-              UpdateCheckManager.class,
-              List.class,
-              SyncContextFactory.class
-          ));
-      bind(Installer.class)
-          .toConstructor(DefaultInstaller.class.getConstructor(
-              Logger.class,
-              FileProcessor.class,
-              RepositoryEventDispatcher.class,
-              List.class,
-              SyncContextFactory.class
-          ));
-      bind(RepositoryConnectorFactory.class)
-          .toConstructor(AsyncRepositoryConnectorFactory.class.getConstructor(
-              Logger.class,
-              FileProcessor.class
-          ));
+      exceptionalConfigure();
     } catch (NoSuchMethodException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  private void exceptionalConfigure() throws NoSuchMethodException {
+    bind(RepositoryEventDispatcher.class)
+        .toConstructor(DefaultRepositoryEventDispatcher.class.getConstructor(
+            Logger.class,
+            List.class));
+    bind(UpdateCheckManager.class)
+        .toConstructor(DefaultUpdateCheckManager.class.getConstructor(
+            Logger.class));
+    bind(RemoteRepositoryManager.class)
+        .toConstructor(DefaultRemoteRepositoryManager.class.getConstructor(
+            Logger.class,
+            UpdateCheckManager.class,
+            List.class));
+    bind(DependencyCollector.class)
+        .toConstructor(DefaultDependencyCollector.class.getConstructor(
+            Logger.class,
+            RemoteRepositoryManager.class,
+            ArtifactDescriptorReader.class,
+            VersionRangeResolver.class
+        ));
+    bind(Deployer.class)
+        .toConstructor(DefaultDeployer.class.getConstructor(
+            Logger.class,
+            FileProcessor.class,
+            RepositoryEventDispatcher.class,
+            RemoteRepositoryManager.class,
+            UpdateCheckManager.class,
+            List.class,
+            SyncContextFactory.class
+        ));
+    bind(Installer.class)
+        .toConstructor(DefaultInstaller.class.getConstructor(
+            Logger.class,
+            FileProcessor.class,
+            RepositoryEventDispatcher.class,
+            List.class,
+            SyncContextFactory.class
+        ));
+    bind(RepositoryConnectorFactory.class)
+        .toConstructor(AsyncRepositoryConnectorFactory.class.getConstructor(
+            Logger.class,
+            FileProcessor.class
+        ));
   }
 
   @Provides
