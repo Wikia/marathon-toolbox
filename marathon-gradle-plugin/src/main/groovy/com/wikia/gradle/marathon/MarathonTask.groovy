@@ -1,9 +1,9 @@
 package com.wikia.gradle.marathon
 
-import com.wikia.gradle.marathon.common.Constraints
-import com.wikia.gradle.marathon.common.Environment
-import com.wikia.gradle.marathon.common.Healthchecks
-import com.wikia.gradle.marathon.common.Resources
+import com.wikia.gradle.marathon.stage.elements.marathon.Constraints
+import com.wikia.gradle.marathon.stage.elements.Environment
+import com.wikia.gradle.marathon.stage.elements.Healthchecks
+import com.wikia.gradle.marathon.stage.elements.Resources
 import com.wikia.gradle.marathon.common.Stage
 import mesosphere.marathon.client.Marathon
 import mesosphere.marathon.client.MarathonClient
@@ -29,7 +29,7 @@ class MarathonTask extends DefaultTask {
     App prepareAppDescription() {
         def app = new App()
         def res = this.stage.resolve(Resources)
-        def marathon = this.stage.resolve(com.wikia.gradle.marathon.common.Marathon);
+        def marathon = this.stage.resolve(com.wikia.gradle.marathon.stage.elements.Marathon);
         app.setPorts(res.ports)
         app.setCpus(res.cpus)
         app.setMem(res.mem)
@@ -91,7 +91,7 @@ class MarathonTask extends DefaultTask {
     @TaskAction
     def setupApp() {
         this.stage = stage.validate()
-        Marathon marathon = MarathonClient.getInstance(this.stage.resolve(com.wikia.gradle.marathon.common.Marathon).getUrl())
+        Marathon marathon = MarathonClient.getInstance(this.stage.resolve(com.wikia.gradle.marathon.stage.elements.Marathon).getUrl())
         def appDescription = prepareAppDescription()
 
         def existingApp = attemptGetExistingApp(marathon, appDescription.getId())

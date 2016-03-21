@@ -1,5 +1,7 @@
 package com.wikia.gradle.marathon.common
 
+import com.wikia.gradle.marathon.stage.elements.*
+import com.wikia.gradle.marathon.stage.elements.marathon.Constraints
 import groovy.transform.AutoClone
 
 import static com.wikia.gradle.marathon.common.ConfigResolver.*
@@ -11,39 +13,36 @@ class Stage {
     Map<Class<? extends Validating>, Closure<? extends Validating>> closures = new HashMap<>()
 
     def resources(Closure dsl) {
-        closures.put(Resources, stackClosures(
-                dslToParamClosure(dsl), closures.get(Resources)
-        ))
+        closuresPut(Resources, dsl)
     }
 
     def environment(Closure dsl) {
-        closures.put(Environment, stackClosures(
-                dslToParamClosure(dsl), closures.get(Environment)
-        ))
+        closuresPut(Environment, dsl)
+    }
+
+    def environmentSource(Closure dsl) {
+        closuresPut(EnvironmentSource, dsl)
     }
 
     def marathon(Closure dsl) {
-        closures.put(Marathon, stackClosures(
-                dslToParamClosure(dsl), closures.get(Marathon)
-        ))
+        closuresPut(Marathon, dsl)
     }
 
     def app(Closure dsl) {
-        closures.put(App, stackClosures(
-                dslToParamClosure(dsl), closures.get(App)
-        ))
+        closuresPut(App, dsl)
     }
 
     def healthchecks(Closure dsl) {
-        closures.put(Healthchecks, stackClosures(
-                dslToParamClosure(dsl), closures.get(Healthchecks)
-        ))
+        closuresPut(Healthchecks, dsl)
     }
 
     def constraints(Closure dsl) {
-        closures.put(Constraints, stackClosures(
-                dslToParamClosure(dsl), closures.get(Constraints)
-        ))
+        closuresPut(Constraints, dsl)
+    }
+
+    def closuresPut(Class clazz, Closure dsl) {
+        closures.put(clazz, stackClosures(
+                dslToParamClosure(dsl), closures.get(clazz)))
     }
 
     def validate() {

@@ -1,5 +1,6 @@
-package com.wikia.gradle.marathon.common
+package com.wikia.gradle.marathon.stage.elements.marathon
 
+import com.wikia.gradle.marathon.common.Validating
 import groovy.transform.AutoClone
 
 @AutoClone

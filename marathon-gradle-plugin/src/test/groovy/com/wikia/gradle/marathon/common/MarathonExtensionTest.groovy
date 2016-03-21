@@ -1,5 +1,8 @@
 package com.wikia.gradle.marathon.common
 
+import com.wikia.gradle.marathon.stage.elements.Environment
+import com.wikia.gradle.marathon.stage.elements.Marathon
+import com.wikia.gradle.marathon.stage.elements.Resources
 import org.junit.Test
 
 import static org.junit.Assert.assertEquals
@@ -124,7 +127,13 @@ class MarathonExtensionTest {
                     instances = 10
                 }
                 environment {
+                    from_
                     y = "2"
+                }
+
+                environmentSource {
+                    fromConsulKV { "root/fru/${someVar}" }
+                    fromConsulKV "dup"
                 }
             }
             globalDefaults {

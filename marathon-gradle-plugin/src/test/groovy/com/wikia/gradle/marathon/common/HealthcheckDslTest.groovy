@@ -1,5 +1,6 @@
 package com.wikia.gradle.marathon.common
 
+import com.wikia.gradle.marathon.stage.elements.Healthchecks
 import org.junit.Test
 
 import static org.junit.Assert.assertEquals

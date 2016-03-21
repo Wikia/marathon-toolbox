@@ -1,5 +1,7 @@
-package com.wikia.gradle.marathon.common
+package com.wikia.gradle.marathon.stage.elements
 
+import com.wikia.gradle.marathon.common.CloneableHealthcheck
+import com.wikia.gradle.marathon.common.Validating
 import groovy.transform.AutoClone
 import mesosphere.marathon.client.model.v2.HealthCheck
 
