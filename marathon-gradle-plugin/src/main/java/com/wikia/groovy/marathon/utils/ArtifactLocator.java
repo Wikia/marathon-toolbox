@@ -78,7 +78,7 @@ public class ArtifactLocator {
     List<MetadataResult> res =
         this.system.resolveMetadata(this.session, Arrays.asList(metadataRequest));
 
-    if (res.size() == 0) {
+    if (res.isEmpty()) {
       throw new RuntimeException("Failed fetching artifact metadata from repository");
     }
     Exception ex = res.get(0).getException();
