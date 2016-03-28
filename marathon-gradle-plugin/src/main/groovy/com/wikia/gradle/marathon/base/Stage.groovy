@@ -1,10 +1,10 @@
-package com.wikia.gradle.marathon.common
+package com.wikia.gradle.marathon.base
 
 import com.wikia.gradle.marathon.stage.elements.*
 import com.wikia.gradle.marathon.stage.elements.marathon.Constraints
 import groovy.transform.AutoClone
 
-import static com.wikia.gradle.marathon.common.ConfigResolver.*
+import static com.wikia.gradle.marathon.base.ConfigResolver.*
 
 @AutoClone
 class Stage {

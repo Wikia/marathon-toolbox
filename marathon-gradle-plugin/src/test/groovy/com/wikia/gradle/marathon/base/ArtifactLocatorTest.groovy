@@ -1,4 +1,4 @@
-package com.wikia.gradle.marathon.common
+package com.wikia.gradle.marathon.base
 
 import com.wikia.groovy.marathon.utils.ArtifactLocator
 import org.junit.Test

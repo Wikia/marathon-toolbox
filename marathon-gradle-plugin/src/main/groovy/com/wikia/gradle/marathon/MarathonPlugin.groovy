@@ -1,8 +1,7 @@
 package com.wikia.gradle.marathon
 
-import com.wikia.gradle.marathon.common.App
-import com.wikia.gradle.marathon.common.MarathonExtension
-import com.wikia.gradle.marathon.common.Stage
+import com.wikia.gradle.marathon.base.App
+import com.wikia.gradle.marathon.base.MarathonExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 

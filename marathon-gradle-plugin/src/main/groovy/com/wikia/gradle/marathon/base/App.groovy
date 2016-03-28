@@ -1,9 +1,8 @@
-package com.wikia.gradle.marathon.common
+package com.wikia.gradle.marathon.base
 
 import com.wikia.groovy.marathon.utils.ArtifactLocator
 import groovy.transform.AutoClone
 import org.gradle.api.Project
-import org.gradle.execution.commandline.TaskConfigurationException
 
 @AutoClone
 class App implements Validating {

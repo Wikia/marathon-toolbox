@@ -1,4 +1,4 @@
-package com.wikia.gradle.marathon.common
+package com.wikia.gradle.marathon.base
 
 import com.wikia.gradle.marathon.stage.elements.marathon.Constraints
 import org.junit.Test

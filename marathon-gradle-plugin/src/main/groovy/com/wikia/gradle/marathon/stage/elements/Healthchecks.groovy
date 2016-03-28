@@ -1,11 +1,11 @@
 package com.wikia.gradle.marathon.stage.elements
 
-import com.wikia.gradle.marathon.common.CloneableHealthcheck
-import com.wikia.gradle.marathon.common.Validating
+import com.wikia.gradle.marathon.base.CloneableHealthcheck
+import com.wikia.gradle.marathon.base.Validating
 import groovy.transform.AutoClone
 import mesosphere.marathon.client.model.v2.HealthCheck
 
-import static com.wikia.gradle.marathon.common.ConfigResolver.dslToParamClosure
+import static com.wikia.gradle.marathon.base.ConfigResolver.dslToParamClosure
 
 @AutoClone
 class Healthchecks implements Validating {

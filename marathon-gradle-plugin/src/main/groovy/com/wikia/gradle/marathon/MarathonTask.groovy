@@ -4,7 +4,7 @@ import com.wikia.gradle.marathon.stage.elements.marathon.Constraints
 import com.wikia.gradle.marathon.stage.elements.Environment
 import com.wikia.gradle.marathon.stage.elements.Healthchecks
 import com.wikia.gradle.marathon.stage.elements.Resources
-import com.wikia.gradle.marathon.common.Stage
+import com.wikia.gradle.marathon.base.Stage
 import mesosphere.marathon.client.Marathon
 import mesosphere.marathon.client.MarathonClient
 import mesosphere.marathon.client.model.v2.App
@@ -51,7 +51,7 @@ class MarathonTask extends DefaultTask {
         List<List<String>> constraints = this.stage.resolve(Constraints).getConstraints()
         app.setConstraints(constraints)
 
-        def appConfig = this.stage.resolve(com.wikia.gradle.marathon.common.App)
+        def appConfig = this.stage.resolve(com.wikia.gradle.marathon.base.App)
         appConfig.validate()
         if (appConfig.isDocker()) {
             Container container = new Container()
