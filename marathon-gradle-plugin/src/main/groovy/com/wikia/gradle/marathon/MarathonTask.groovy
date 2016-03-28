@@ -43,6 +43,8 @@ class MarathonTask extends DefaultTask {
         app.setBackoffSeconds(marathon.backoffSeconds)
         app.setMaxLaunchDelaySeconds(marathon.maxLaunchDelaySeconds)
 
+        app.setEnv(this.stag)
+
         List<HealthCheck> healthChecks = this.stage.resolve(Healthchecks).healthchecksProvider()
         app.setHealthChecks(healthChecks)
 

@@ -9,7 +9,6 @@ import static com.wikia.gradle.marathon.common.ConfigResolver.*
 @AutoClone
 class Stage {
 
-    String name
     Map<Class<? extends Validating>, Closure<? extends Validating>> closures = new HashMap<>()
 
     def resources(Closure dsl) {

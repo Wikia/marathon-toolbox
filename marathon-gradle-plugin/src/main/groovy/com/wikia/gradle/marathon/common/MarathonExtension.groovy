@@ -4,6 +4,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 public class MarathonExtension {
+
     Logger logger = LoggerFactory.getLogger(MarathonExtension)
     Stage globalDefaults = new Stage()
 
@@ -21,11 +22,12 @@ public class MarathonExtension {
             stage.name = name
             setupAndAddStage(stage, varArgs[0] as Closure)
         } else {
-            throw new RuntimeException("Deployment configuration must be declared using single Closure")
+            throw new RuntimeException(
+                    "Deployment configuration must be declared using single Closure")
         }
     }
 
-    Stage getStage(String name){
+    Stage getStage(String name) {
         Stage rv = this.stages.get(name)
         rv.clone().insertBefore(this.globalDefaults)
     }
