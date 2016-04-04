@@ -1,0 +1,24 @@
+*.class
+http.log*
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# Folders
+target/
+build/
+.gradle/
+
+# Eclipse files
+.classpath
+.project
+.settings/
+
+# Idea
+*.iml
+*.ipr
+*.iws
+.idea/
+
