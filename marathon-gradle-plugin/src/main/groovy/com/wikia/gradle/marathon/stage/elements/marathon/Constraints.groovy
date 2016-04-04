@@ -1,4 +1,6 @@
-package com.wikia.gradle.marathon.common
+package com.wikia.gradle.marathon.stage.elements.marathon
+
+import com.wikia.gradle.marathon.base.Validating
 
 class Constraints implements Validating {
     List<List<String>> constraintList = new LinkedList<>()

@@ -1,10 +1,11 @@
 package com.wikia.gradle.marathon
 
-import com.wikia.gradle.marathon.common.Constraints
-import com.wikia.gradle.marathon.common.Environment
-import com.wikia.gradle.marathon.common.Healthchecks
-import com.wikia.gradle.marathon.common.Resources
-import com.wikia.gradle.marathon.common.Stage
+import com.wikia.gradle.marathon.stage.elements.marathon.Constraints
+import com.wikia.gradle.marathon.stage.elements.Environment
+import com.wikia.gradle.marathon.stage.elements.Healthchecks
+import com.wikia.gradle.marathon.stage.elements.Resources
+import com.wikia.gradle.marathon.base.Stage
+import com.wikia.gradle.marathon.util.AppFactory
 import mesosphere.marathon.client.Marathon
 import mesosphere.marathon.client.MarathonClient
 import mesosphere.marathon.client.model.v2.App
@@ -27,21 +28,15 @@ class MarathonTask extends DefaultTask {
     }
 
     App prepareAppDescription() {
-        def app = new App()
-        def res = this.stage.resolve(Resources)
-        def marathon = this.stage.resolve(com.wikia.gradle.marathon.common.Marathon);
-        app.setPorts(res.ports)
-        app.setCpus(res.cpus)
-        app.setMem(res.mem)
-        app.setInstances(res.instances)
-        app.setUpgradeStrategy(marathon.resolveUpgradeStrategy());
+        AppFactory appFactory = new AppFactory();
+        def app = appFactory
+                .withResources(res)
+                .withMarathon(marathon)
+                .produce()
+
         app.setEnv(this.stage.resolve(Environment).getEnv())
+
         app.setId(this.getDeploymentId())
-        app.setRequirePorts(res.requirePorts)
-        app.setLabels(marathon.resolveLabels().labels)
-        app.setBackoffFactor(marathon.backoffFactor)
-        app.setBackoffSeconds(marathon.backoffSeconds)
-        app.setMaxLaunchDelaySeconds(marathon.maxLaunchDelaySeconds)
 
         List<HealthCheck> healthChecks = this.stage.resolve(Healthchecks).healthchecksProvider()
         app.setHealthChecks(healthChecks)
@@ -49,7 +44,7 @@ class MarathonTask extends DefaultTask {
         List<List<String>> constraints = this.stage.resolve(Constraints).getConstraints()
         app.setConstraints(constraints)
 
-        def appConfig = this.stage.resolve(com.wikia.gradle.marathon.common.App)
+        def appConfig = this.stage.resolve(com.wikia.gradle.marathon.base.App)
         appConfig.validate()
         if (appConfig.isDocker()) {
             Container container = new Container()
@@ -91,7 +86,7 @@ class MarathonTask extends DefaultTask {
     @TaskAction
     def setupApp() {
         this.stage = stage.validate()
-        Marathon marathon = MarathonClient.getInstance(this.stage.resolve(com.wikia.gradle.marathon.common.Marathon).getUrl())
+        Marathon marathon = MarathonClient.getInstance(this.stage.resolve(com.wikia.gradle.marathon.stage.elements.Marathon).getUrl())
         def appDescription = prepareAppDescription()
 
         def existingApp = attemptGetExistingApp(marathon, appDescription.getId())

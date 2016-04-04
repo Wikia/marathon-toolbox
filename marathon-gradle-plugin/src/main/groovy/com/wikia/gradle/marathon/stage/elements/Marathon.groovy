@@ -1,10 +1,13 @@
-package com.wikia.gradle.marathon.common
+package com.wikia.gradle.marathon.stage.elements
 
+import com.wikia.gradle.marathon.stage.elements.marathon.Constraints
+import com.wikia.gradle.marathon.stage.elements.marathon.Labels
+import com.wikia.gradle.marathon.base.Validating
 import groovy.transform.AutoClone
 import mesosphere.marathon.client.model.v2.UpgradeStrategy
 
-import static com.wikia.gradle.marathon.common.ConfigResolver.dslToParamClosure
-import static com.wikia.gradle.marathon.common.ConfigResolver.resolveNullConfig
+import static com.wikia.gradle.marathon.base.ConfigResolver.dslToParamClosure
+import static com.wikia.gradle.marathon.base.ConfigResolver.resolveNullConfig
 
 @AutoClone
 class Marathon implements Validating {

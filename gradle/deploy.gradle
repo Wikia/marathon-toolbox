@@ -17,14 +17,16 @@ artifacts {
 publishing {
     repositories {
         maven {
-            credentials {
-                username artifactoryUsername
-                password artifactoryPassword
+            if (project.ext.has('artifactoryUsername')) {
+                credentials {
+                    username project.ext.artifactoryUsername
+                    password project.ext.artifactoryPassword
+                }
             }
             if (project.version.endsWith('-SNAPSHOT')) {
-                url "${artifactoryUrl}/artifactory/libs-snapshot-local"
+                url "https://artifactory.wikia-inc.com/artifactory/libs-snapshot-local"
             } else {
-                url "${artifactoryUrl}/artifactory/plugins-source"
+                url "https://artifactory.wikia-inc.com/artifactory/plugins-source"
             }
         }
     }

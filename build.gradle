@@ -1,0 +1,6 @@
+subprojects {
+    repositories {
+        maven { url "https://artifactory.wikia-inc.com/artifactory/libs-release" }
+        maven { url "${artifactoryUrl}/artifactory/libs-release" }
+    }
+}

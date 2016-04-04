@@ -1,4 +1,4 @@
-package com.wikia.gradle.marathon.common
+package com.wikia.gradle.marathon.base
 
 trait Validating {
 
