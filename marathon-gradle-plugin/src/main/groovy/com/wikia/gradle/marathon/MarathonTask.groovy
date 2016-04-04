@@ -5,6 +5,7 @@ import com.wikia.gradle.marathon.stage.elements.Environment
 import com.wikia.gradle.marathon.stage.elements.Healthchecks
 import com.wikia.gradle.marathon.stage.elements.Resources
 import com.wikia.gradle.marathon.base.Stage
+import com.wikia.gradle.marathon.util.AppFactory
 import mesosphere.marathon.client.Marathon
 import mesosphere.marathon.client.MarathonClient
 import mesosphere.marathon.client.model.v2.App
@@ -27,23 +28,15 @@ class MarathonTask extends DefaultTask {
     }
 
     App prepareAppDescription() {
-        def app = new App()
-        def res = this.stage.resolve(Resources)
-        def marathon = this.stage.resolve(com.wikia.gradle.marathon.stage.elements.Marathon);
-        app.setPorts(res.ports)
-        app.setCpus(res.cpus)
-        app.setMem(res.mem)
-        app.setInstances(res.instances)
-        app.setUpgradeStrategy(marathon.resolveUpgradeStrategy());
-        app.setEnv(this.stage.resolve(Environment).getEnv())
-        app.setId(this.getDeploymentId())
-        app.setRequirePorts(res.requirePorts)
-        app.setLabels(marathon.resolveLabels().labels)
-        app.setBackoffFactor(marathon.backoffFactor)
-        app.setBackoffSeconds(marathon.backoffSeconds)
-        app.setMaxLaunchDelaySeconds(marathon.maxLaunchDelaySeconds)
+        AppFactory appFactory = new AppFactory();
+        def app = appFactory
+                .withResources(res)
+                .withMarathon(marathon)
+                .produce()
 
-        app.setEnv(this.stag)
+        app.setEnv(this.stage.resolve(Environment).getEnv())
+
+        app.setId(this.getDeploymentId())
 
         List<HealthCheck> healthChecks = this.stage.resolve(Healthchecks).healthchecksProvider()
         app.setHealthChecks(healthChecks)
