@@ -1,0 +1,7 @@
+subprojects {
+  version = "0.5.31"
+  repositories {
+    jcenter()
+    mavenCentral()
+  }
+}

@@ -1,15 +1,11 @@
 apply plugin: 'groovy'
 apply from: rootProject.file('gradle/deploy.gradle')
 
-version = '0.5.30-SNAPSHOT'
 group = 'com.wikia.gradle'
 sourceCompatibility = 1.7
 
 repositories {
-    mavenLocal()
-    mavenCentral()
     maven { url "http://repo.jenkins-ci.org/repo" }
-    maven { url "${artifactoryUrl}/artifactory/plugins-source" }
 }
 
 dependencies {
