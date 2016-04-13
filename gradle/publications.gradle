@@ -1,0 +1,56 @@
+apply plugin: 'maven-publish'
+
+bintray {
+    key = project.ext.properties['bintrayApiKey']
+    user = project.ext.properties['bintrayUser']
+    publications = ['mavenJava']
+    pkg {
+        name = 'marathon-client'
+        repo = 'maven'
+        licenses = ['Apache-2.0']
+        version {
+            gpg {
+                sign = true
+            }
+        }
+    }
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    sourcesJar
+    javadocJar
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+        }
+    }
+    repositories {
+        maven {
+            credentials {
+                username artifactoryUsername
+                password artifactoryPassword
+            }
+            if (version.endsWith('-SNAPSHOT')) {
+                url "${artifactoryUrl}/artifactory/libs-snapshot-local"
+            } else {
+                url "${artifactoryUrl}/artifactory/plugins-source"
+            }
+        }
+    }
+}
+

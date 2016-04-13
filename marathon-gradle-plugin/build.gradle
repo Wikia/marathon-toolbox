@@ -19,7 +19,7 @@ dependencies {
     compile 'com.google.guava:guava:18.0'
     compile 'com.github.zafarkhaja:java-semver:0.8.0'
     compile 'org.kohsuke:github-api:1.59'
-    compile 'com.wikia:marathon-client:0.5.3'
+    compile project(":marathon-client")
 
     compile 'org.sonatype.aether:aether-connector-asynchttpclient:1.13.1'
     compile 'com.google.inject:guice:4.0-beta5'

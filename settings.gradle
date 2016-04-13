@@ -1,3 +1,4 @@
 rootProject.name = "marathon-toolkit"
 
 include 'marathon-gradle-plugin'
+include 'marathon-client'
