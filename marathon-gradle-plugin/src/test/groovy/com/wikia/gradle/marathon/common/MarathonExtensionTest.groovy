@@ -13,6 +13,7 @@ class MarathonExtensionTest {
         def stageCreator = new MarathonExtension()
         stageCreator.globalDefaults {
             marathon {
+                id = "hello/dolly"
                 marathonUrl = "ehlo"
                 backoffFactor = 1.1
                 backoffSeconds = 1
@@ -55,6 +56,7 @@ class MarathonExtensionTest {
         assertEquals(stage.resolve(Marathon).resolveLabels().labels.get("consul"), "true")
         assertEquals(stage.resolve(Marathon).backoffFactor, 1.1, DELTA)
         assertEquals(stage.resolve(Marathon).backoffSeconds, 1)
+        assertEquals(stage.resolve(Marathon).id, "hello/dolly")
         assertEquals(stage.resolve(Marathon).maxLaunchDelaySeconds, 10)
     }
 
@@ -184,4 +186,5 @@ class MarathonExtensionTest {
         assertEquals(1, production.resolve(Resources).cpus, DELTA)
         assertEquals(Arrays.asList(0,0), production.resolve(Resources).ports)
     }
+
 }

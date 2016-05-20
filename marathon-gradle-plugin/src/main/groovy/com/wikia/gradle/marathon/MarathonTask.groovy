@@ -22,47 +22,8 @@ class MarathonTask extends DefaultTask {
     public static final String PRESERVE_INSTANCE_ALLOCATION = 'marathon.preserveInstanceAllocation'
     Stage stage
 
-    String getDeploymentId() {
-        return "/" + [stage.name, project.group, project.name].join("/")
-    }
-
     App prepareAppDescription() {
-        def app = new App()
-        def res = this.stage.resolve(Resources)
-        def marathon = this.stage.resolve(com.wikia.gradle.marathon.common.Marathon);
-        app.setPorts(res.ports)
-        app.setCpus(res.cpus)
-        app.setMem(res.mem)
-        app.setInstances(res.instances)
-        app.setUpgradeStrategy(marathon.resolveUpgradeStrategy());
-        app.setEnv(this.stage.resolve(Environment).getEnv())
-        app.setId(this.getDeploymentId())
-        app.setRequirePorts(res.requirePorts)
-        app.setLabels(marathon.resolveLabels().labels)
-        app.setBackoffFactor(marathon.backoffFactor)
-        app.setBackoffSeconds(marathon.backoffSeconds)
-        app.setMaxLaunchDelaySeconds(marathon.maxLaunchDelaySeconds)
-
-        List<HealthCheck> healthChecks = this.stage.resolve(Healthchecks).healthchecksProvider()
-        app.setHealthChecks(healthChecks)
-
-        List<List<String>> constraints = this.stage.resolve(Constraints).getConstraints()
-        app.setConstraints(constraints)
-
-        def appConfig = this.stage.resolve(com.wikia.gradle.marathon.common.App)
-        appConfig.validate()
-        if (appConfig.isDocker()) {
-            Container container = new Container()
-            container.type = "DOCKER"
-            container.docker.image = appConfig.imageProvider(project)
-            container.docker.network = "HOST"
-            app.setContainer(container)
-        } else {
-            app.setUris(Arrays.asList(appConfig.uriProvider(project)))
-        }
-
-        app.setCmd(appConfig.cmdProvider(project))
-        return app
+        return new AppFactory(this.stage, project).create()
     }
 
     def Optional<App> attemptGetExistingApp(Marathon client, String appId) {

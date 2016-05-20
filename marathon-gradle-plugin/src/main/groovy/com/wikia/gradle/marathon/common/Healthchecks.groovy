@@ -10,7 +10,12 @@ class Healthchecks implements Validating {
 
     List<Closure<HealthCheck>> healthcheckList = new LinkedList<>()
 
+    @Deprecated
     public def reset() {
+        healthcheckList.clear()
+    }
+
+    public def clear() {
         healthcheckList.clear()
     }
 

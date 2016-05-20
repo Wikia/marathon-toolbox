@@ -1,25 +1,14 @@
 package com.wikia.gradle.marathon.common
 
+import com.wikia.gradle.marathon.common.util.MockProject
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Test
 
 import static GroovyTestCase.assertEquals
+import static com.wikia.gradle.marathon.common.util.MockProject.testProject
 
 class AppTest {
-
-    static final Project rootProject = ProjectBuilder.builder().withName("root").build()
-
-    def testProject() {
-        Project project = ProjectBuilder.builder()
-                .withName("test_a")
-                .withParent(rootProject)
-                .build()
-        project.ext.distZip = [extension: "zip", archiveName: "test-zzz.zip"]
-        project.ext.applicationName = "appName"
-        return project
-    }
-
     @Test
     void "test dsl generating proper arguments for Dropwizard application"() {
         def app = new App()
@@ -31,7 +20,7 @@ class AppTest {
         dsl()
 
         assertEquals(app.getArguments()(testProject()),
-                                    ["server", "test-zzz/conf/config-name"])
+                     ["server", "test-zzz/conf/config-name"])
     }
 
     @Test

@@ -16,6 +16,7 @@ class Marathon implements Validating {
     Double backoffFactor
     Integer backoffSeconds
     Integer maxLaunchDelaySeconds
+    String id
 
     def validate() {
         if (this.properties.get("marathonUrl") == null) {
