@@ -1,52 +1,55 @@
 package com.wikia.gradle.marathon
 
-import com.wikia.gradle.marathon.common.Constraints
-import com.wikia.gradle.marathon.common.Environment
-import com.wikia.gradle.marathon.common.Healthchecks
-import com.wikia.gradle.marathon.common.Marathon
-import com.wikia.gradle.marathon.common.Resources
-import com.wikia.gradle.marathon.common.Stage
+import com.wikia.gradle.marathon.common.*
 import mesosphere.marathon.client.model.v2.App
 import mesosphere.marathon.client.model.v2.Container
 import mesosphere.marathon.client.model.v2.HealthCheck
+import mesosphere.marathon.client.model.v2.Resource
 import org.gradle.api.Project
 
+import java.util.stream.Collectors
+import java.util.stream.Stream
+
 class AppFactory {
+
     Stage stage
     Project project
 
-    AppFactory(Stage stage, Project project){
+    AppFactory(Stage stage, Project project) {
         this.stage = stage;
         this.project = project;
     }
+
     String getDefaultDeploymentId() {
         return "/" + [stage.name, project.group, project.name].join("/")
     }
 
-    public App create(){
-        def app = new App()
+    public App create() {
+        def app = App.builder()
+
         def res = stage.resolve(Resources)
         def marathon = stage.resolve(Marathon);
-        app.setPorts(res.ports)
-        app.setCpus(res.cpus)
-        app.setMem(res.mem)
-        app.setInstances(res.instances)
-        app.setUpgradeStrategy(marathon.resolveUpgradeStrategy());
-        app.setEnv(stage.resolve(Environment).getEnv())
-        app.setId(marathon.id ?: getDefaultDeploymentId())
 
-        app.setRequirePorts(res.requirePorts)
-        app.setLabels(marathon.resolveLabels().labels)
+        app.ports(res.ports)
+        app.cpus(res.cpus)
+        app.mem(res.mem)
+        app.instances(res.instances)
+        app.upgradeStrategy(marathon.resolveUpgradeStrategy());
+        app.env(stage.resolve(Environment).getEnv())
+        app.id(marathon.id ?: getDefaultDeploymentId())
 
-        app.setBackoffFactor(marathon.backoffFactor)
-        app.setBackoffSeconds(marathon.backoffSeconds)
-        app.setMaxLaunchDelaySeconds(marathon.maxLaunchDelaySeconds)
+        app.requirePorts(res.requirePorts)
+        app.labels(marathon.resolveLabels().labels)
+
+        app.backoffFactor(marathon.backoffFactor)
+        app.backoffSeconds(marathon.backoffSeconds)
+        app.maxLaunchDelaySeconds(marathon.maxLaunchDelaySeconds)
 
         List<HealthCheck> healthChecks = stage.resolve(Healthchecks).healthchecksProvider()
-        app.setHealthChecks(healthChecks)
+        app.healthChecks(healthChecks)
 
         List<List<String>> constraints = stage.resolve(Constraints).getConstraints()
-        app.setConstraints(constraints)
+        app.constraints(constraints)
 
         def appConfig = stage.resolve(com.wikia.gradle.marathon.common.App)
         appConfig.validate()
@@ -55,12 +58,17 @@ class AppFactory {
             container.type = "DOCKER"
             container.docker.image = appConfig.imageProvider(project)
             container.docker.network = "HOST"
-            app.setContainer(container)
+            app.container(container)
         } else {
-            app.setUris(Collections.<String>singletonList(appConfig.uriProvider(project)))
+            app.fetch(Stream.of(appConfig.uriProvider(project)).map({ uri ->
+                Resource.builder()
+                        .uri(uri)
+                        .cache(appConfig.cacheFetching)
+                        .build()
+            }).collect(Collectors.toList()))
         }
 
-        app.setCmd(appConfig.cmdProvider(project))
-        return app
+        app.cmd(appConfig.cmdProvider(project))
+        return app.build()
     }
 }
