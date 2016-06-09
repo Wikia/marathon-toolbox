@@ -17,7 +17,6 @@ class App implements Validating {
     Closure<String> executablePath = null
 
     String mavenPublishTaskName = null
-    Boolean cacheFetching = true
 
     def mavenSource(String repositoryUrl, String mavenPublishTaskName) {
         this.mavenPublishTaskName = mavenPublishTaskName
