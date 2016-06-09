@@ -65,11 +65,9 @@ class MarathonTask extends DefaultTask {
         def existingApp = attemptGetExistingApp(marathon, appDescription.getId())
         if (existingApp.isPresent()) {
             appDescription = mergeAppDescriptions(existingApp.get(), appDescription, project)
-            Boolean force = Optional.ofNullable(project.getProperties().get(FORCE_UPDATE))
-                    .map({ x -> x.toString().toBoolean() })
-                    .orElse(false)
+
             try {
-                marathon.updateApp(appDescription.getId(), appDescription, force)
+                marathon.updateApp(appDescription.getId(), appDescription, isSet(FORCE_UPDATE, project))
             } catch (Exception e) {
                 handleUpdateException(e)
             }
