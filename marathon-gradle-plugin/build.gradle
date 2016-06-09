@@ -2,8 +2,8 @@ apply plugin: 'groovy'
 apply from: rootProject.file('gradle/deploy.gradle')
 
 group = 'com.wikia.gradle'
-sourceCompatibility = 1.7
-version = "0.5.37"
+sourceCompatibility = 1.8
+version = "0.5.38"
 
 repositories {
     maven { url "http://repo.jenkins-ci.org/repo" }
