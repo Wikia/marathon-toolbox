@@ -14,10 +14,8 @@ import org.gradle.api.tasks.TaskExecutionException
 class MarathonTask extends DefaultTask {
 
     public static final String FORCE_UPDATE = 'marathon.forceUpdate'
-    public static final String PRESERVE_INSTANCE_ALLOCATION = 'marathon.preserveInstanceAllocation'
-    public static final String PRESERVE_MEMORY_ALLOCATION = 'marathon.preserveMemoryAllocation'
-    public static final String PRESERVE_CPU_ALLOCATION = 'marathon.preserveCpuAllocation'
-    private Stage stage
+    public static final String MAX_RESOURCES = 'marathon.chooseMaxResourceValue'
+    Stage stage
 
     App prepareAppDescription() {
         return new AppFactory(this.stage, project).create()
@@ -41,15 +39,10 @@ class MarathonTask extends DefaultTask {
 
     static def mergeAppDescriptions(App existingApp, App appDescription,
                                     Project project) {
-
-        if (isSet(PRESERVE_INSTANCE_ALLOCATION, project)) {
-            appDescription.instances = existingApp.instances;
-        }
-        if (isSet(PRESERVE_CPU_ALLOCATION, project)) {
-            appDescription.cpus = existingApp.getCpus();
-        }
-        if (isSet(PRESERVE_MEMORY_ALLOCATION, project)) {
-            appDescription.mem = existingApp.mem;
+        if (isSet(MAX_RESOURCES, project)) {
+            appDescription.instances = Integer.max(appDescription.instances, existingApp.instances)
+            appDescription.mem = Double.max(appDescription.mem, existingApp.mem)
+            appDescription.cpus = Double.max(appDescription.cpus, existingApp.cpus)
         }
 
         return appDescription
@@ -67,7 +60,8 @@ class MarathonTask extends DefaultTask {
             appDescription = mergeAppDescriptions(existingApp.get(), appDescription, project)
 
             try {
-                marathon.updateApp(appDescription.getId(), appDescription, isSet(FORCE_UPDATE, project))
+                marathon.updateApp(appDescription.getId(), appDescription,
+                                   isSet(FORCE_UPDATE, project))
             } catch (Exception e) {
                 handleUpdateException(e)
             }
@@ -75,6 +69,7 @@ class MarathonTask extends DefaultTask {
             marathon.createApp(appDescription)
         }
     }
+
 
     def handleUpdateException(Exception e) {
         /**

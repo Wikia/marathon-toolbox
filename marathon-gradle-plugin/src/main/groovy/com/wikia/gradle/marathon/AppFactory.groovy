@@ -63,6 +63,7 @@ class AppFactory {
             app.fetch(Stream.of(appConfig.uriProvider(project)).map({ uri ->
                 Resource.builder()
                         .uri(uri)
+                        .extract(appConfig.extractFetched)
                         .cache(appConfig.cacheFetching)
                         .build()
             }).collect(Collectors.toList()))
