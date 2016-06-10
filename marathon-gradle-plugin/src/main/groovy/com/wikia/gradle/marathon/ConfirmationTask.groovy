@@ -10,13 +10,13 @@ class ConfirmationTask extends DefaultTask {
     def confirmation() {
         def console = System.console()
         if (console != null) {
-            def line = console.readLine("\nCONFIRMATION: type project name (" + project.name + "): ");
+            def line = console.readLine("\n\nCONFIRMATION: type project name (" + project.name + "):\n");
             if (!(line == project.name)) {
                 throw new BuildCancelledException("aborted by user")
             }
         } else {
-            println "deploy works only in console";
-            throw new BuildCancelledException("deploy works only in console")
+            println "deploy works only in console (or without --daemon flat)";
+            throw new BuildCancelledException("deploy works only in console (or without --daemon flat)")
         }
     }
 }
