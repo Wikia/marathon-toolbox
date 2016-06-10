@@ -46,7 +46,7 @@ class Stage {
         ))
     }
 
-    def validate() {
+    def Stage validate() {
         if (this.name == null) {
             throw new RuntimeException("Stage.name needs to be set")
         }

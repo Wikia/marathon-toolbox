@@ -8,7 +8,6 @@ import static com.wikia.gradle.marathon.common.ConfigResolver.resolveNullConfig
 
 @AutoClone
 class Marathon implements Validating {
-
     String marathonUrl
     Closure rawUpgradeStrategy
     Closure rawLabels
@@ -60,7 +59,7 @@ class Marathon implements Validating {
         return resolveNullConfig(this.rawConstraints, Constraints)
     }
 
-    def getUrl() {
+    def String getUrl() {
         return marathonUrl
     }
 }

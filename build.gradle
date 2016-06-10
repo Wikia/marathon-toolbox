@@ -1,6 +1,7 @@
 subprojects {
-  repositories {
-    jcenter()
-    mavenCentral()
-  }
+    repositories {
+        maven { url "https://artifactory.wikia-inc.com/artifactory/libs-source" }
+        jcenter()
+        mavenCentral()
+    }
 }

@@ -17,7 +17,7 @@ class MarathonTask extends DefaultTask {
     public static final String PRESERVE_INSTANCE_ALLOCATION = 'marathon.preserveInstanceAllocation'
     public static final String PRESERVE_MEMORY_ALLOCATION = 'marathon.preserveMemoryAllocation'
     public static final String PRESERVE_CPU_ALLOCATION = 'marathon.preserveCpuAllocation'
-    private Stage stage
+    Stage stage
 
     App prepareAppDescription() {
         return new AppFactory(this.stage, project).create()
