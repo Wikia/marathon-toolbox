@@ -10,7 +10,7 @@ import org.gradle.api.Project
 import java.util.stream.Collectors
 import java.util.stream.Stream
 
-class AppFactory {
+public class AppFactory {
 
     Stage stage
     Project project

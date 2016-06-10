@@ -5,7 +5,7 @@ import groovy.transform.AutoClone
 import static com.wikia.gradle.marathon.common.ConfigResolver.*
 
 @AutoClone
-class Stage {
+public class Stage {
 
     String name
     Map<Class<? extends Validating>, Closure<? extends Validating>> closures = new HashMap<>()

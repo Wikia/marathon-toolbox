@@ -1,6 +1,5 @@
-package tmp
+package com.wikia.gradle.marathon
 
-import com.wikia.gradle.marathon.AppFactory
 import com.wikia.gradle.marathon.common.Stage
 import mesosphere.marathon.client.Marathon
 import mesosphere.marathon.client.MarathonClient
@@ -59,27 +58,11 @@ class MarathonTask : DefaultTask() {
         return appDescription
     }
 
-    fun handleUpdateException(e: Exception) {
-        /**
-         * the root cause of an exception should be a MarathonException, which sadly
-         * does not expose its HTTP status directly
-         */
-        val cause = ExceptionUtils.getRootCause(e)
-
-        when (cause.message?.trim()) {
-            "Conflict (http status: 409)" -> {
-                val message = "cannot deploy, existing deployment already in progress"
-                throw RuntimeException(message)
-            }
-            else -> throw TaskExecutionException(this, cause)
-        }
-    }
-
     @TaskAction
     fun setupApp() {
         this.stage = stage?.validate()
 
-        val url = this.stage?.resolve(MarathonGradle::class.java)?.url ?: throw RuntimeException("marathon url is not defined")
+        val url = this.stage?.resolve(com.wikia.gradle.marathon.common.Marathon::class.java)?.url ?: throw RuntimeException("marathon url is not defined")
         val marathon = MarathonClient.getInstance(url)
 
         var appDescription = prepareAppDescription()
