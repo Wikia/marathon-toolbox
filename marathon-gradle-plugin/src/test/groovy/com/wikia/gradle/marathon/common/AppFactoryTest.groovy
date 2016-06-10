@@ -7,7 +7,7 @@ import org.junit.Test
 import static org.junit.Assert.assertEquals
 
 class AppFactoryTest {
-    
+
     @Test
     public void testSimplestStageDefintionCreatesProperAppDefinition() {
         def stageCreator = new MarathonExtension();
@@ -25,6 +25,6 @@ class AppFactoryTest {
         assertEquals("/prod/root/test_a", app.id)
         assertEquals("test-zzz/bin/appName server test-zzz/conf/config-name", app.cmd)
         assertEquals("http://repo-url/root/test_a/unspecified/test_a-unspecified.zip",
-                     app.uris.first())
+                     app.fetch.first().uri)
     }
 }
