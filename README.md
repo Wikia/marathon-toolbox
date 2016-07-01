@@ -145,7 +145,34 @@ Above definitions will result in following configuration being included in app d
 }
 ```
 
+# In stage options
 
+## `resources`
+
+Settable properties:
+- `cpu` - floating point number of CPU shares assigned to the service
+Where 1.0 CPU means that service is *guaranteed* to have *minimum* computing power of 1 CPU 
+- `mem` - number in MB of allocated memory
+This is strict quota if service goes over this limit it will be OOM killed by the system
+- `instances` - number of instances that will be launched valid values are 0 to 9001+  
+- `ports` - array of port numbers that application wants to acquire.
+-  `requirePorts` - when used with `ports` it will allow service to get exactly the specified ports in `ports`
+
+Helper methods:
+- `useRandomPorts(n)` - will cause mesos to assign *n* random ports to the service 
+
+### example
+```
+deployments {
+  stage {
+    resources {
+      cpu = 1
+      instances = 3
+      mem = 100
+    }
+  }
+}
+```
 ### Project properties that change behaviour
 
 - `marathon.forceUpdate` - makes app update override any deployments currently running
