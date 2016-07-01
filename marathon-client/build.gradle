@@ -1,6 +1,6 @@
 apply plugin: 'java'
 apply from: rootProject.file('gradle/deploy.gradle')
-version = "0.5.35"
+version = "0.5.36"
 
 group = "com.wikia"
 
