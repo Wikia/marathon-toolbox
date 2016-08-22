@@ -44,6 +44,7 @@ app.setId("echohisleepbye-app");
 app.setCmd("echo hi; sleep 10; echo bye;");
 app.setCpus(1.0);
 app.setMem(16.0);
+app.setDisk(1.0);
 app.setInstances(1);
 marathon.createApp(app);
 ```

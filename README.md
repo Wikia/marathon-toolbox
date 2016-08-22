@@ -64,6 +64,7 @@ deployments {
         resources {
             cpus = 1
             mem = 200
+            disk = 10
             instances = 10
             useRandomPorts(1)
         }
@@ -153,6 +154,7 @@ Settable properties:
 Where 1.0 CPU means that service is *guaranteed* to have *minimum* computing power of 1 CPU 
 - `mem` - number in MB of allocated memory.
 This is strict quota if service goes over this limit it will be OOM killed by the system.
+- `disk` - maximum disk space available to the service. If exceeded task will be killed by the system.
 - `instances` - number of instances that will be launched valid values are 0 to 9001+
 - `ports` - array of port numbers that application wants to acquire.
 -  `requirePorts` - when used with `ports` it will allow service to get exactly the specified ports in `ports`

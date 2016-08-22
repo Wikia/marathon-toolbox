@@ -43,6 +43,7 @@ class MarathonTask extends DefaultTask {
             appDescription.instances = Integer.max(appDescription.instances, existingApp.instances)
             appDescription.mem = Double.max(appDescription.mem, existingApp.mem)
             appDescription.cpus = Double.max(appDescription.cpus, existingApp.cpus)
+            appDescription.disk = Double.max(appDescription.disk, existingApp.disk)
         }
 
         return appDescription
