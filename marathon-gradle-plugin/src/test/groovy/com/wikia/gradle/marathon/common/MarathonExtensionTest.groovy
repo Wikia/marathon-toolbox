@@ -34,6 +34,7 @@ class MarathonExtensionTest {
                 cpus = 1
                 mem = 100
                 instances = 1
+                disk = 2
                 ports = [0]
             }
             environment {
@@ -47,6 +48,7 @@ class MarathonExtensionTest {
         assertEquals(stage.name, "awesome_stage")
         assertEquals(stage.resolve(Resources).cpus, 1, DELTA)
         assertEquals(stage.resolve(Resources).mem, 100, DELTA)
+        assertEquals(stage.resolve(Resources).disk, 2, DELTA)
         assertEquals(stage.resolve(Environment).dslProvidedEnvironment.get("d")(), "someValue")
         assertEquals(stage.resolve(Environment).dslProvidedEnvironment.get("a")(), "b")
         assertEquals(stage.resolve(Marathon).resolveUpgradeStrategy().minimumHealthCapacity, 0.5, DELTA)
@@ -115,6 +117,7 @@ class MarathonExtensionTest {
                     ports = [0]
                     instances = 2
                     cpus = 1.1
+                    disk = 1.0
                 }
                 environment {
                     x = "1"
@@ -132,6 +135,7 @@ class MarathonExtensionTest {
             globalDefaults {
                 resources {
                     cpus = 1.2
+                    disk = 1.5
                 }
             }
         }
@@ -143,6 +147,7 @@ class MarathonExtensionTest {
         assertEquals(stage.resolve(Environment).getEnv().get("y"), "2")
 
         assertEquals(stage.resolve(Resources).cpus, 1.2, DELTA)
+        assertEquals(stage.resolve(Resources).disk, 1.5, DELTA)
         assertEquals(stage.resolve(Resources).mem, 200, DELTA)
         assertEquals(stage.resolve(Resources).instances, 10)
         assertEquals(stage.resolve(Resources).ports, [0])
@@ -159,12 +164,14 @@ class MarathonExtensionTest {
                 resources {
                     cpus = 10
                     mem = 10
+                    disk = 10
                     useRandomPorts(2)
                 }
             }
             testing {
                 resources {
                     mem = 2
+                    disk = 20
                 }
             }
             production {
@@ -181,10 +188,12 @@ class MarathonExtensionTest {
         testing.insertBefore(stageCreator.globalDefaults)
         assertEquals(2, testing.resolve(Resources).mem, DELTA)
         assertEquals(10, testing.resolve(Resources).cpus, DELTA)
+        assertEquals(20, testing.resolve(Resources).disk, DELTA)
 
         def production = stageCreator.getStage("production")
         assertEquals(1, production.resolve(Resources).cpus, DELTA)
         assertEquals(Arrays.asList(0,0), production.resolve(Resources).ports)
+        assertEquals(10, production.resolve(Resources).disk, DELTA)
     }
 
 }

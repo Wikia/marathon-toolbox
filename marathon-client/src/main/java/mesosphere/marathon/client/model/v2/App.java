@@ -16,6 +16,7 @@ public class App {
   private Integer instances;
   private Double cpus;
   private Double mem;
+  private Double disk;
   private Double backoffFactor;
   private Integer backoffSeconds;
   private Integer maxLaunchDelaySeconds;

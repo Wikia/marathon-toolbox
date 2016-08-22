@@ -7,6 +7,7 @@ class Resources implements Validating {
 
     Double cpus
     Double mem
+    Double disk
     Integer instances
     List<Integer> ports
     boolean requirePorts

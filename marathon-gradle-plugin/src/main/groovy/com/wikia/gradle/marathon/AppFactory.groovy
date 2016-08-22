@@ -33,6 +33,7 @@ class AppFactory {
         app.ports(res.ports)
         app.cpus(res.cpus)
         app.mem(res.mem)
+        app.disk(res.disk)
         app.instances(res.instances)
         app.upgradeStrategy(marathon.resolveUpgradeStrategy());
         app.env(stage.resolve(Environment).getEnv())
