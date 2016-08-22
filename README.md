@@ -282,3 +282,9 @@ Settable properties:
 - `marathon.forceUpdate` - makes app update override any deployments currently running
 - `marathon.chooseMaxResourceValue` - does not override marathon assigned resource quotas if those quotas are higher than ones defined in the deployment
 - `marathon.isConfirmationNotNeeded` - disables the confirmation dialog
+
+# Development #
+# version management
+:exclamantion: **for repo managers only**
+
+We use [bumpversion](https://github.com/peritus/bumpversion) to manage library version numbers and sync it with git tags. To bump version just use `bumpversion patch`
